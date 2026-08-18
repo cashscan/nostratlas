@@ -19,7 +19,7 @@ Nostr Atlas is a single-file, client-side web app for exploring Nostr event kind
 No build step or server is required.
 
 1. Download or clone this project.
-2. Open `index-1.html` in a modern browser.
+2. Open `index.html` in a modern browser.
 3. Search for a kind, select a card, or use one of the event tools.
 
 For more reliable browser behavior—especially live registry requests and WebSocket relay access—serve the file from a local HTTP server:
