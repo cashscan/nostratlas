@@ -3,26 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0b10">
+  <meta name="theme-color" content="#090a0f">
   <title>Nostr Atlas</title>
 
   <style>
     :root {
       --bg: #090a0f;
       --panel: #11131b;
-      --panel-2: #161925;
+      --panel-2: #171a25;
       --line: rgba(255,255,255,.1);
-      --line-strong: rgba(255,255,255,.18);
+      --line-strong: rgba(255,255,255,.19);
       --text: #f5f3f8;
-      --muted: #9896a4;
-      --soft: #c7c4d1;
+      --soft: #cbc8d4;
+      --muted: #9795a4;
+      --faint: #686673;
       --accent: #ff825c;
-      --accent-2: #b894ff;
+      --accent-soft: #ffb099;
+      --violet: #b894ff;
       --green: #78d6a6;
       --yellow: #f2c96d;
       --danger: #f28191;
-      --shadow: 0 24px 80px rgba(0,0,0,.38);
-      --radius: 18px;
+      --shadow: 0 24px 90px rgba(0,0,0,.46);
+      --radius: 17px;
     }
 
     * {
@@ -37,13 +39,17 @@
       margin: 0;
       min-width: 320px;
       background:
-        radial-gradient(circle at 50% -10%, rgba(184,148,255,.13), transparent 34rem),
-        radial-gradient(circle at 100% 35%, rgba(255,130,92,.06), transparent 28rem),
+        radial-gradient(circle at 50% -15%, rgba(184,148,255,.14), transparent 35rem),
+        radial-gradient(circle at 100% 30%, rgba(255,130,92,.06), transparent 28rem),
         var(--bg);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
         "Segoe UI", sans-serif;
       line-height: 1.5;
+    }
+
+    body.locked {
+      overflow: hidden;
     }
 
     button,
@@ -60,10 +66,22 @@
       color: inherit;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .app {
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 38px 0 80px;
+      padding: 38px 0 78px;
     }
 
     .topbar {
@@ -78,16 +96,16 @@
       display: flex;
       align-items: center;
       gap: 11px;
-      letter-spacing: .16em;
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 850;
+      letter-spacing: .16em;
     }
 
     .brand-mark {
       display: grid;
       place-items: center;
-      width: 27px;
-      height: 27px;
+      width: 28px;
+      height: 28px;
       border: 1px solid var(--line-strong);
       border-radius: 9px;
       color: var(--accent);
@@ -112,7 +130,7 @@
     }
 
     .hero {
-      max-width: 760px;
+      max-width: 780px;
       margin: 0 auto 54px;
       text-align: center;
     }
@@ -121,14 +139,14 @@
       margin: 0 0 17px;
       color: var(--accent);
       font-size: 11px;
-      font-weight: 800;
+      font-weight: 850;
       letter-spacing: .22em;
       text-transform: uppercase;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(42px, 7vw, 78px);
+      font-size: clamp(43px, 7vw, 79px);
       line-height: .96;
       letter-spacing: -.075em;
     }
@@ -143,7 +161,7 @@
       position: relative;
       display: flex;
       align-items: center;
-      max-width: 690px;
+      max-width: 700px;
       margin: 0 auto;
     }
 
@@ -158,13 +176,13 @@
     #search {
       width: 100%;
       height: 61px;
-      padding: 0 51px;
+      padding: 0 52px;
       border: 1px solid var(--line-strong);
       border-radius: 17px;
       outline: none;
-      background: rgba(17,19,27,.84);
+      background: rgba(17,19,27,.86);
       color: var(--text);
-      box-shadow: 0 12px 45px rgba(0,0,0,.2);
+      box-shadow: 0 12px 45px rgba(0,0,0,.22);
       transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
     }
 
@@ -173,7 +191,7 @@
     }
 
     #search:focus {
-      border-color: rgba(184,148,255,.72);
+      border-color: rgba(184,148,255,.76);
       background: var(--panel-2);
       box-shadow: 0 0 0 4px rgba(184,148,255,.09), 0 18px 52px rgba(0,0,0,.3);
     }
@@ -200,7 +218,7 @@
     .hero-actions {
       display: flex;
       justify-content: center;
-      gap: 11px;
+      gap: 10px;
       margin-top: 16px;
       flex-wrap: wrap;
     }
@@ -213,7 +231,8 @@
       background: rgba(255,255,255,.035);
       color: var(--soft);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 750;
+      text-decoration: none;
       transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
     }
 
@@ -222,18 +241,25 @@
       border-color: rgba(184,148,255,.6);
       background: rgba(184,148,255,.12);
       color: var(--text);
+      outline: none;
       transform: translateY(-1px);
     }
 
     .button.primary {
       border-color: rgba(255,130,92,.5);
       background: rgba(255,130,92,.12);
-      color: #ffb099;
+      color: var(--accent-soft);
+    }
+
+    .button.success {
+      border-color: rgba(120,214,166,.4);
+      background: rgba(120,214,166,.1);
+      color: var(--green);
     }
 
     .hint {
       margin: 13px 0 0;
-      color: #686774;
+      color: var(--faint);
       font-size: 11px;
     }
 
@@ -274,7 +300,7 @@
       margin: 0 0 12px;
       color: #aaa8b5;
       font-size: 10px;
-      font-weight: 800;
+      font-weight: 850;
       letter-spacing: .18em;
       text-transform: uppercase;
     }
@@ -299,9 +325,9 @@
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 15px;
-      background: linear-gradient(145deg, rgba(22,25,37,.9), rgba(13,15,22,.92));
-      text-align: left;
+      background: linear-gradient(145deg, rgba(22,25,37,.92), rgba(13,15,22,.94));
       color: var(--text);
+      text-align: left;
       transition: border-color .22s ease, transform .22s ease, background .22s ease, box-shadow .22s ease;
     }
 
@@ -323,8 +349,8 @@
       border-color: rgba(184,148,255,.55);
       background: linear-gradient(145deg, rgba(32,30,50,.96), rgba(15,17,26,.96));
       box-shadow: 0 15px 35px rgba(0,0,0,.22);
-      transform: translateY(-3px);
       outline: none;
+      transform: translateY(-3px);
     }
 
     .kind-number {
@@ -333,14 +359,14 @@
       color: var(--accent);
       font-family: "SFMono-Regular", Consolas, monospace;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 750;
     }
 
     .kind-name {
       display: block;
       margin-bottom: 5px;
       font-size: 15px;
-      font-weight: 750;
+      font-weight: 800;
       letter-spacing: -.02em;
     }
 
@@ -353,8 +379,8 @@
 
     .card-meta {
       position: absolute;
-      right: 15px;
       top: 17px;
+      right: 15px;
       color: var(--muted);
       font-family: "SFMono-Regular", Consolas, monospace;
       font-size: 10px;
@@ -382,7 +408,7 @@
       display: none;
       align-items: flex-end;
       justify-content: center;
-      background: rgba(3,4,8,.72);
+      background: rgba(3,4,8,.74);
       backdrop-filter: blur(9px);
     }
 
@@ -391,8 +417,8 @@
     }
 
     .sheet {
-      width: min(760px, 100%);
-      max-height: min(90vh, 850px);
+      width: min(800px, 100%);
+      max-height: min(91vh, 900px);
       overflow-y: auto;
       padding: 30px;
       border: 1px solid var(--line-strong);
@@ -406,8 +432,15 @@
     }
 
     @keyframes sheet-in {
-      from { transform: translateY(25px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from {
+        opacity: 0;
+        transform: translateY(25px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .sheet-top {
@@ -422,15 +455,15 @@
       color: var(--accent);
       font-family: "SFMono-Regular", Consolas, monospace;
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 850;
       letter-spacing: .12em;
     }
 
     .sheet h2 {
       margin: 0;
       font-size: clamp(27px, 5vw, 39px);
-      letter-spacing: -.06em;
       line-height: 1;
+      letter-spacing: -.06em;
     }
 
     .close {
@@ -464,14 +497,29 @@
       border-radius: 6px;
       color: var(--soft);
       font-size: 10px;
-      font-weight: 800;
+      font-weight: 850;
       letter-spacing: .08em;
       text-transform: uppercase;
     }
 
     .badge.accent {
       border-color: rgba(255,130,92,.4);
-      color: #ffab92;
+      color: var(--accent-soft);
+    }
+
+    .badge.green {
+      border-color: rgba(120,214,166,.36);
+      color: var(--green);
+    }
+
+    .badge.yellow {
+      border-color: rgba(242,201,109,.38);
+      color: var(--yellow);
+    }
+
+    .badge.danger {
+      border-color: rgba(242,129,145,.38);
+      color: var(--danger);
     }
 
     .detail-section {
@@ -496,8 +544,8 @@
     .dna {
       display: flex;
       align-items: center;
-      gap: 7px;
       min-height: 66px;
+      gap: 7px;
       padding: 13px;
       overflow-x: auto;
       border: 1px solid var(--line);
@@ -542,6 +590,7 @@
     }
 
     .tag-chip strong {
+      margin-right: 5px;
       color: var(--accent);
       font-family: monospace;
     }
@@ -558,12 +607,8 @@
       outline: none;
     }
 
-    .example {
-      position: relative;
-    }
-
     pre {
-      max-height: 260px;
+      max-height: 290px;
       margin: 0;
       padding: 17px;
       overflow: auto;
@@ -578,6 +623,45 @@
       word-break: break-word;
     }
 
+    code.extracted-id {
+      display: block;
+      padding: 15px;
+      overflow-wrap: anywhere;
+      border: 1px solid rgba(120,214,166,.3);
+      border-radius: 12px;
+      background: rgba(120,214,166,.07);
+      color: var(--green);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .extracted-kind {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .extracted-kind strong,
+    .extracted-kind span {
+      display: block;
+    }
+
+    .extracted-kind strong {
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .extracted-kind span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .sheet-actions {
       display: flex;
       gap: 9px;
@@ -586,7 +670,7 @@
     }
 
     .inspector-sheet {
-      width: min(820px, 100%);
+      width: min(850px, 100%);
     }
 
     .inspector-input {
@@ -604,6 +688,12 @@
       line-height: 1.55;
     }
 
+    input.inspector-input {
+      min-height: 0;
+      height: 52px;
+      resize: none;
+    }
+
     .inspector-input:focus {
       border-color: rgba(184,148,255,.72);
       box-shadow: 0 0 0 4px rgba(184,148,255,.08);
@@ -619,6 +709,7 @@
     }
 
     .inspector-message {
+      min-height: 18px;
       margin-top: 12px;
       color: var(--danger);
       font-size: 12px;
@@ -643,7 +734,7 @@
       color: var(--accent);
       font-family: monospace;
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 850;
     }
 
     .field-explanation {
@@ -651,15 +742,35 @@
       font-size: 12px;
     }
 
+    .relay-box {
+      display: grid;
+      gap: 9px;
+      grid-template-columns: 1fr auto;
+    }
+
+    .relay-input {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      outline: none;
+      background: #0a0b10;
+      color: var(--soft);
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .relay-input:focus {
+      border-color: rgba(184,148,255,.72);
+      box-shadow: 0 0 0 4px rgba(184,148,255,.08);
+    }
+
     .footer {
       margin-top: 64px;
       color: #64626e;
       font-size: 11px;
       text-align: center;
-    }
-
-    .hidden {
-      display: none !important;
     }
 
     @media (min-width: 720px) {
@@ -717,6 +828,15 @@
         grid-template-columns: 88px 1fr;
         gap: 9px;
       }
+
+      .relay-box {
+        grid-template-columns: 1fr;
+      }
+
+      .extracted-kind {
+        align-items: stretch;
+        flex-direction: column;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -754,6 +874,7 @@
 
       <div class="search-wrap">
         <span class="search-icon" aria-hidden="true">⌕</span>
+
         <input
           id="search"
           type="search"
@@ -761,16 +882,28 @@
           aria-label="Search Nostr kinds"
           placeholder="Search a kind, NIP, tag, event or concept..."
         >
-        <button id="clearSearch" class="clear-search" type="button" aria-label="Clear search">×</button>
+
+        <button
+          id="clearSearch"
+          class="clear-search"
+          type="button"
+          aria-label="Clear search"
+        >×</button>
       </div>
 
       <div class="hero-actions">
         <button id="openInspector" class="button primary" type="button">
           Explain a Nostr Event
         </button>
+
+        <button id="openLinkExtractor" class="button" type="button">
+          Extract Event ID
+        </button>
       </div>
 
-      <p class="hint">Try 30023, article, reaction, private message, NIP-17, or calendar</p>
+      <p class="hint">
+        Try 30023, article, reaction, private message, NIP-17, calendar, or a note link
+      </p>
     </section>
 
     <section aria-labelledby="universe-title">
@@ -779,6 +912,7 @@
           <h2 id="universe-title">The kind universe</h2>
           <p>Events are the pieces. Kinds tell us what they mean.</p>
         </div>
+
         <span id="resultCount" class="result-count"></span>
       </div>
 
@@ -817,7 +951,13 @@
           <p class="sheet-label">EVENT TRANSLATOR</p>
           <h2 id="inspectorTitle">Explain an event</h2>
         </div>
-        <button class="close" type="button" data-close="inspector" aria-label="Close">×</button>
+
+        <button
+          class="close"
+          type="button"
+          data-close="inspector"
+          aria-label="Close"
+        >×</button>
       </div>
 
       <p class="beginner-copy">
@@ -826,6 +966,7 @@
 
       <div class="detail-section">
         <label class="sr-only" for="eventInput">Nostr event JSON</label>
+
         <textarea
           id="eventInput"
           class="inspector-input"
@@ -834,14 +975,76 @@
         ></textarea>
 
         <div class="sheet-actions">
-          <button id="explainEvent" class="button primary" type="button">Explain event</button>
-          <button id="loadExample" class="button" type="button">Load example</button>
+          <button id="explainEvent" class="button primary" type="button">
+            Explain event
+          </button>
+
+          <button id="loadExample" class="button" type="button">
+            Load example
+          </button>
         </div>
 
         <div id="inspectorMessage" class="inspector-message" role="alert"></div>
       </div>
 
       <div id="inspectorResult" class="inspector-result"></div>
+    </section>
+  </div>
+
+  <div id="linkOverlay" class="overlay" aria-hidden="true">
+    <section
+      class="sheet inspector-sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="linkTitle"
+    >
+      <div class="sheet-top">
+        <div>
+          <p class="sheet-label">EVENT LINK PARSER</p>
+          <h2 id="linkTitle">Find an event</h2>
+        </div>
+
+        <button
+          class="close"
+          type="button"
+          data-close="link"
+          aria-label="Close"
+        >×</button>
+      </div>
+
+      <p class="beginner-copy">
+        Paste a Nostr note, event link, identifier, or event JSON.
+        Atlas will find the event ID and help you inspect it.
+      </p>
+
+      <div class="detail-section">
+        <label class="sr-only" for="linkInput">
+          Nostr event link or identifier
+        </label>
+
+        <input
+          id="linkInput"
+          class="inspector-input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="https://bchnostr.com/note/dd244207..."
+        >
+
+        <div class="sheet-actions">
+          <button id="extractEventId" class="button primary" type="button">
+            Extract event ID
+          </button>
+
+          <button id="loadBchExample" class="button" type="button">
+            Load BCH Nostr example
+          </button>
+        </div>
+
+        <div id="linkMessage" class="inspector-message" role="alert"></div>
+      </div>
+
+      <div id="linkResult" class="inspector-result"></div>
     </section>
   </div>
 
@@ -958,7 +1161,7 @@
         name: "Direct Message",
         description: "A private message used within the modern NIP-17 flow.",
         category: "Messaging",
-        aliases: ["private message", "DM", "gift wrap", "conversation"],
+        aliases: ["private message", "DM", "conversation"],
         nips: ["NIP-17"],
         status: "official",
         structure: ["kind", "content", "p"],
@@ -1168,18 +1371,24 @@
     const clearSearch = document.getElementById("clearSearch");
     const resultCount = document.getElementById("resultCount");
     const noResults = document.getElementById("noResults");
+
     const detailOverlay = document.getElementById("detailOverlay");
     const detailSheet = document.getElementById("detailSheet");
+
     const inspectorOverlay = document.getElementById("inspectorOverlay");
     const eventInput = document.getElementById("eventInput");
     const inspectorResult = document.getElementById("inspectorResult");
     const inspectorMessage = document.getElementById("inspectorMessage");
 
-    let activeKind = null;
+    const linkOverlay = document.getElementById("linkOverlay");
+    const linkInput = document.getElementById("linkInput");
+    const linkResult = document.getElementById("linkResult");
+    const linkMessage = document.getElementById("linkMessage");
+
     let lastFocusedElement = null;
     let placeholderIndex = 0;
 
-    const examples = [
+    const searchExamples = [
       "30023",
       "article",
       "reaction",
@@ -1216,16 +1425,14 @@
     }
 
     function matches(item, query) {
-      if (!query.trim()) return true;
+      const q = String(query || "").trim().toLowerCase();
 
-      const q = query.trim().toLowerCase();
-      const text = searchableText(item);
-
+      if (!q) return true;
       if (String(item.kind) === q) return true;
-      if ((item.nips || []).some(nip => nip.toLowerCase() === q)) return true;
       if (item.name.toLowerCase() === q) return true;
+      if ((item.nips || []).some(nip => nip.toLowerCase() === q)) return true;
 
-      return text.includes(q);
+      return searchableText(item).includes(q);
     }
 
     function renderUniverse(query = "") {
@@ -1238,6 +1445,7 @@
 
         const section = document.createElement("section");
         section.className = "category";
+
         section.innerHTML = `
           <h3 class="category-heading">${escapeHtml(category)}</h3>
           <div class="kind-grid">
@@ -1267,9 +1475,14 @@
     }
 
     function statusLabel(status) {
-      return status === "official"
-        ? "Official"
-        : status.charAt(0).toUpperCase() + status.slice(1);
+      return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+
+    function statusClass(status) {
+      if (status === "official") return "green";
+      if (status === "draft" || status === "experimental") return "yellow";
+      if (status === "deprecated") return "danger";
+      return "";
     }
 
     function exampleEvent(item) {
@@ -1290,9 +1503,10 @@
       });
 
       return {
-        kind: item.kind,
+        id: "event-id",
         pubkey: "author-public-key",
         created_at: 1770000000,
+        kind: item.kind,
         tags,
         content: item.kind === 30023
           ? "# A small idea\\n\\nLong-form content written in Markdown."
@@ -1301,13 +1515,13 @@
             : item.kind === 1
               ? "Hello Nostr!"
               : "Example event content",
-        id: "event-id",
         sig: "event-signature"
       };
     }
 
     function renderDna(item) {
       const nodes = item.structure || ["kind", "content", "tags"];
+
       return nodes.map((node, index) => `
         ${index ? '<span class="dna-arrow" aria-hidden="true">→</span>' : ""}
         <span class="dna-node">${escapeHtml(node)}</span>
@@ -1317,10 +1531,17 @@
     function renderRelated(item) {
       return (item.related || []).map(kindNumber => {
         const related = getKind(kindNumber);
+
         return related
-          ? `<button class="related-chip" type="button" data-related-kind="${related.kind}">
+          ? `
+            <button
+              class="related-chip"
+              type="button"
+              data-related-kind="${related.kind}"
+            >
               ${related.kind} · ${escapeHtml(related.name)}
-            </button>`
+            </button>
+          `
           : "";
       }).join("");
     }
@@ -1333,7 +1554,6 @@
         return;
       }
 
-      activeKind = item.kind;
       lastFocusedElement = document.activeElement;
 
       if (updateHash) {
@@ -1363,13 +1583,28 @@
           <div>
             <p class="sheet-label">KIND ${item.kind}</p>
             <h2 id="detailTitle">${escapeHtml(item.name)}</h2>
+
             <div class="badges">
-              ${(item.nips || []).map(nip => `<span class="badge accent">${escapeHtml(nip)}</span>`).join("")}
-              <span class="badge">${escapeHtml(statusLabel(item.status))}</span>
-              ${item.addressability ? `<span class="badge">${escapeHtml(item.addressability)}</span>` : ""}
+              ${(item.nips || []).map(nip => `
+                <span class="badge accent">${escapeHtml(nip)}</span>
+              `).join("")}
+
+              <span class="badge ${statusClass(item.status)}">
+                ${escapeHtml(statusLabel(item.status))}
+              </span>
+
+              ${item.addressability ? `
+                <span class="badge">${escapeHtml(item.addressability)}</span>
+              ` : ""}
             </div>
           </div>
-          <button class="close" type="button" data-close="detail" aria-label="Close">×</button>
+
+          <button
+            class="close"
+            type="button"
+            data-close="detail"
+            aria-label="Close"
+          >×</button>
         </div>
 
         <section class="detail-section">
@@ -1379,7 +1614,9 @@
 
         <section class="detail-section">
           <h3>Nostr DNA</h3>
-          <div class="dna" aria-label="Event structure">${renderDna(item)}</div>
+          <div class="dna" aria-label="Event structure">
+            ${renderDna(item)}
+          </div>
         </section>
 
         <section class="detail-section">
@@ -1397,46 +1634,67 @@
           <div class="related-list">${renderRelated(item)}</div>
         </section>
 
-        <section class="detail-section example">
+        <section class="detail-section">
           <h3>Example event</h3>
           <pre>${escapeHtml(JSON.stringify(event, null, 2))}</pre>
         </section>
 
         <div class="sheet-actions">
-          <button class="button primary" type="button" data-inspect-example>Inspect event</button>
+          <button
+            class="button primary"
+            type="button"
+            data-inspect-example
+          >Inspect event</button>
+
           ${(item.nips || []).map(nip => `
-            <a class="button" href="${NIP_URLS[nip] || "#"}" target="_blank" rel="noopener">View ${escapeHtml(nip)} ↗</a>
+            <a
+              class="button"
+              href="${NIP_URLS[nip] || "#"}"
+              target="_blank"
+              rel="noopener"
+            >View ${escapeHtml(nip)} ↗</a>
           `).join("")}
         </div>
       `;
 
-      detailOverlay.classList.add("open");
-      detailOverlay.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
+      showOverlay(detailOverlay);
+
+      detailSheet.querySelector("[data-close='detail']")
+        .addEventListener("click", closeDetail);
 
       detailSheet.querySelectorAll("[data-related-kind]").forEach(button => {
-        button.addEventListener("click", () => openKind(Number(button.dataset.relatedKind)));
+        button.addEventListener("click", () => {
+          openKind(Number(button.dataset.relatedKind));
+        });
       });
 
-      detailSheet.querySelector("[data-inspect-example]")?.addEventListener("click", () => {
-        eventInput.value = JSON.stringify(event, null, 2);
-        closeDetail();
-        openInspector();
-        explainEvent();
-      });
+      detailSheet.querySelector("[data-inspect-example]")
+        ?.addEventListener("click", () => {
+          eventInput.value = JSON.stringify(event, null, 2);
+          closeDetail();
+          openInspector();
+          explainEvent();
+        });
 
       detailSheet.querySelector("[data-close='detail']").focus();
     }
 
     function openUnknownKind(kindNumber) {
       lastFocusedElement = document.activeElement;
+
       detailSheet.innerHTML = `
         <div class="sheet-top">
           <div>
             <p class="sheet-label">UNKNOWN KIND</p>
             <h2 id="detailTitle">Kind ${escapeHtml(kindNumber)}</h2>
           </div>
-          <button class="close" type="button" data-close="detail" aria-label="Close">×</button>
+
+          <button
+            class="close"
+            type="button"
+            data-close="detail"
+            aria-label="Close"
+          >×</button>
         </div>
 
         <section class="detail-section">
@@ -1448,6 +1706,7 @@
 
         <section class="detail-section">
           <h3>Generic event structure</h3>
+
           <div class="dna">
             <span class="dna-node">kind</span>
             <span class="dna-arrow">→</span>
@@ -1460,16 +1719,36 @@
         </section>
       `;
 
-      detailOverlay.classList.add("open");
-      detailOverlay.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
+      showOverlay(detailOverlay);
+
+      detailSheet.querySelector("[data-close='detail']")
+        .addEventListener("click", closeDetail);
+
       detailSheet.querySelector("[data-close='detail']").focus();
     }
 
+    function showOverlay(overlay) {
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("locked");
+    }
+
+    function hideOverlay(overlay) {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+
+      if (
+        !detailOverlay.classList.contains("open") &&
+        !inspectorOverlay.classList.contains("open") &&
+        !linkOverlay.classList.contains("open")
+      ) {
+        document.body.classList.remove("locked");
+      }
+    }
+
     function closeDetail() {
-      detailOverlay.classList.remove("open");
-      detailOverlay.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
+      hideOverlay(detailOverlay);
+
       if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
         lastFocusedElement.focus();
       }
@@ -1477,18 +1756,30 @@
 
     function openInspector() {
       lastFocusedElement = document.activeElement;
-      inspectorOverlay.classList.add("open");
-      inspectorOverlay.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
+      showOverlay(inspectorOverlay);
       eventInput.focus();
     }
 
     function closeInspector() {
-      inspectorOverlay.classList.remove("open");
-      inspectorOverlay.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
+      hideOverlay(inspectorOverlay);
       inspectorResult.classList.remove("visible");
       inspectorMessage.textContent = "";
+
+      if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
+        lastFocusedElement.focus();
+      }
+    }
+
+    function openLinkExtractor() {
+      lastFocusedElement = document.activeElement;
+      showOverlay(linkOverlay);
+      linkInput.focus();
+    }
+
+    function closeLinkExtractor() {
+      hideOverlay(linkOverlay);
+      linkResult.classList.remove("visible");
+      linkMessage.textContent = "";
 
       if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
         lastFocusedElement.focus();
@@ -1504,7 +1795,8 @@
       try {
         event = JSON.parse(eventInput.value);
       } catch {
-        inspectorMessage.textContent = "That is not valid JSON. Check commas, quotes, and brackets.";
+        inspectorMessage.textContent =
+          "That is not valid JSON. Check commas, quotes, and brackets.";
         return;
       }
 
@@ -1514,40 +1806,60 @@
       }
 
       if (!Number.isInteger(event.kind)) {
-        inspectorMessage.textContent = "This object needs a numeric kind field.";
+        inspectorMessage.textContent =
+          "This object needs a numeric kind field.";
         return;
       }
 
       const item = getKind(event.kind);
       const kindName = item ? item.name : "Unknown Kind";
-      const fields = ["pubkey", "kind", "created_at", "tags", "content", "id", "sig"];
+
+      const fields = [
+        "id",
+        "pubkey",
+        "created_at",
+        "kind",
+        "tags",
+        "content",
+        "sig"
+      ];
 
       inspectorResult.innerHTML = `
         <section class="detail-section">
           <h3>This is</h3>
+
           <p class="beginner-copy">
-            <strong>Kind ${event.kind} · ${escapeHtml(kindName)}</strong><br>
-            ${escapeHtml(item?.explanation || "This event kind is not currently documented in the loaded registry.")}
+            <strong>Kind ${escapeHtml(event.kind)} · ${escapeHtml(kindName)}</strong><br>
+            ${escapeHtml(
+              item?.explanation ||
+              "This event kind is not currently documented in the loaded registry."
+            )}
           </p>
         </section>
 
         <section class="detail-section">
           <h3>Event structure</h3>
+
           <div class="field-tree">
             ${fields.map(field => {
               const exists = Object.prototype.hasOwnProperty.call(event, field);
-              const value = exists
-                ? typeof event[field] === "string"
-                  ? event[field].slice(0, 120)
-                  : JSON.stringify(event[field])
-                : "missing";
+
+              let value = "missing";
+
+              if (exists) {
+                value = typeof event[field] === "string"
+                  ? event[field].slice(0, 150)
+                  : JSON.stringify(event[field]);
+              }
 
               return `
                 <div class="field">
                   <div class="field-name">${field}</div>
+
                   <div class="field-explanation">
                     ${escapeHtml(FIELD_EXPLANATIONS[field])}
-                    <br><span style="color:${exists ? "var(--green)" : "var(--danger)"}">
+                    <br>
+                    <span style="color:${exists ? "var(--green)" : "var(--danger)"}">
                       ${escapeHtml(value)}
                     </span>
                   </div>
@@ -1559,6 +1871,7 @@
 
         <section class="detail-section">
           <h3>Recognized tags</h3>
+
           <div class="tag-list">
             ${renderInspectorTags(event.tags, item)}
           </div>
@@ -1581,18 +1894,22 @@
       return tags.map(tag => {
         const name = Array.isArray(tag) ? tag[0] : "";
         const value = Array.isArray(tag) ? tag.slice(1).join(" · ") : "";
-        const explanation = item?.fields?.[name] ||
-          ({
-            e: "References another event.",
-            p: "References another public key.",
-            a: "References an addressable or replaceable event.",
-            t: "A topic or hashtag."
-          }[name] || "This tag is not described by the loaded metadata.");
+
+        const explanation = item?.fields?.[name] || ({
+          e: "References another event.",
+          p: "References another public key.",
+          a: "References an addressable or replaceable event.",
+          t: "A topic or hashtag.",
+          k: "The kind number of the referenced event."
+        }[name] || "This tag is not described by the loaded metadata.");
 
         return `
           <div class="tag-chip">
             <strong>${escapeHtml(name || "?")}</strong>
-            <span>${escapeHtml(value || "empty")} — ${escapeHtml(explanation)}</span>
+            <span>
+              ${escapeHtml(value || "empty")} —
+              ${escapeHtml(explanation)}
+            </span>
           </div>
         `;
       }).join("");
@@ -1603,13 +1920,635 @@
       explainEvent();
     }
 
+    function normalizeInput(value) {
+      return String(value || "").trim();
+    }
+
+    function isHexEventId(value) {
+      return /^[a-fA-F0-9]{64}$/.test(value);
+    }
+
+    function isBech32Charset(value) {
+      return /^[a-z0-9]+$/i.test(value);
+    }
+
+    function base64urlToBytes(value) {
+      const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+      const binary = atob(padded);
+
+      return Uint8Array.from(binary, char => char.charCodeAt(0));
+    }
+
+    function bytesToHex(bytes) {
+      return Array.from(bytes)
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    const BECH32_ALPHABET =
+      "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+
+    function bech32Polymod(values) {
+      const generator = [
+        0x3b6a57b2,
+        0x26508e6d,
+        0x1ea119fa,
+        0x3d4233dd,
+        0x2a1462b3
+      ];
+
+      let chk = 1;
+
+      for (const value of values) {
+        const top = chk >>> 25;
+        chk = ((chk & 0x1ffffff) << 5) ^ value;
+
+        for (let bit = 0; bit < 5; bit++) {
+          if ((top >>> bit) & 1) {
+            chk ^= generator[bit];
+          }
+        }
+      }
+
+      return chk >>> 0;
+    }
+
+    function bech32HrpExpand(hrp) {
+      const high = [];
+      const low = [];
+
+      for (const char of hrp) {
+        high.push(char.charCodeAt(0) >> 5);
+      }
+
+      high.push(0);
+
+      for (const char of hrp) {
+        low.push(char.charCodeAt(0) & 31);
+      }
+
+      return high.concat(low);
+    }
+
+    function convertBits(data, fromBits, toBits, pad = true) {
+      let accumulator = 0;
+      let bits = 0;
+      const result = [];
+      const maxValue = (1 << toBits) - 1;
+      const maxAccumulator = (1 << (fromBits + toBits - 1)) - 1;
+
+      for (const value of data) {
+        if (value < 0 || value >> fromBits !== 0) return null;
+
+        accumulator = ((accumulator << fromBits) | value) & maxAccumulator;
+        bits += fromBits;
+
+        while (bits >= toBits) {
+          bits -= toBits;
+          result.push((accumulator >> bits) & maxValue);
+        }
+      }
+
+      if (pad) {
+        if (bits) result.push((accumulator << (toBits - bits)) & maxValue);
+      } else {
+        if (bits >= fromBits) return null;
+        if (((accumulator << (toBits - bits)) & maxValue) !== 0) return null;
+      }
+
+      return result;
+    }
+
+    function decodeBech32(value) {
+      let input = normalizeInput(value).toLowerCase();
+
+      if (input.startsWith("nostr:")) {
+        input = input.slice(6);
+      }
+
+      const separator = input.lastIndexOf("1");
+
+      if (separator < 1 || separator + 7 > input.length) {
+        throw new Error("Invalid bech32 identifier.");
+      }
+
+      const hrp = input.slice(0, separator);
+      const dataPart = input.slice(separator + 1);
+
+      if (!isBech32Charset(dataPart)) {
+        throw new Error("Invalid bech32 characters.");
+      }
+
+      const data = [];
+
+      for (const char of dataPart) {
+        const index = BECH32_ALPHABET.indexOf(char);
+
+        if (index === -1) {
+          throw new Error("Invalid bech32 character.");
+        }
+
+        data.push(index);
+      }
+
+      const checksum = data.slice(-6);
+      const payload = data.slice(0, -6);
+      const verify = bech32Polymod(
+        bech32HrpExpand(hrp).concat(data)
+      );
+
+      if (verify !== 1) {
+        throw new Error("Invalid bech32 checksum.");
+      }
+
+      return {
+        hrp,
+        words: payload,
+        bytes: convertBits(payload, 5, 8, false)
+      };
+    }
+
+    function parseNip19(value) {
+      const decoded = decodeBech32(value);
+
+      if (!decoded.bytes) {
+        throw new Error("Unable to decode identifier payload.");
+      }
+
+      if (decoded.hrp === "note") {
+        if (decoded.bytes.length !== 32) {
+          throw new Error("A note identifier must contain 32 bytes.");
+        }
+
+        return {
+          type: "note",
+          id: bytesToHex(decoded.bytes),
+          source: "NIP-19 note identifier"
+        };
+      }
+
+      if (decoded.hrp === "nevent") {
+        return parseNeventTLV(decoded.bytes);
+      }
+
+      throw new Error(
+        `Unsupported NIP-19 identifier: ${decoded.hrp}`
+      );
+    }
+
+    function parseNeventTLV(bytes) {
+      const fields = [];
+      let offset = 0;
+
+      while (offset < bytes.length) {
+        if (offset + 2 > bytes.length) {
+          throw new Error("Malformed nevent data.");
+        }
+
+        const type = bytes[offset];
+        const length = bytes[offset + 1];
+        offset += 2;
+
+        if (offset + length > bytes.length) {
+          throw new Error("Malformed nevent field length.");
+        }
+
+        fields.push({
+          type,
+          value: bytes.slice(offset, offset + length)
+        });
+
+        offset += length;
+      }
+
+      const idField = fields.find(field => field.type === 0);
+
+      if (!idField || idField.value.length !== 32) {
+        throw new Error("The nevent identifier has no valid event ID.");
+      }
+
+      const relayHints = fields
+        .filter(field => field.type === 1)
+        .map(field => new TextDecoder().decode(field.value));
+
+      const authorField = fields.find(field => field.type === 2);
+      const kindField = fields.find(field => field.type === 3);
+
+      let kind;
+
+      if (kindField && kindField.value.length === 4) {
+        kind = (
+          (kindField.value[0] << 24) |
+          (kindField.value[1] << 16) |
+          (kindField.value[2] << 8) |
+          kindField.value[3]
+        ) >>> 0;
+      }
+
+      return {
+        type: "nevent",
+        id: bytesToHex(idField.value),
+        relays: relayHints,
+        author: authorField ? bytesToHex(authorField.value) : null,
+        kind: Number.isInteger(kind) ? kind : null,
+        source: "NIP-19 nevent identifier"
+      };
+    }
+
+    function extractFromUrl(value) {
+      let decodedUrl;
+
+      try {
+        decodedUrl = decodeURIComponent(value);
+      } catch {
+        decodedUrl = value;
+      }
+
+      const bchMatch = decodedUrl.match(
+        /bchnostr\.com\/note\/([a-fA-F0-9]{64})(?:[/?#].*)?$/i
+      );
+
+      if (bchMatch) {
+        return {
+          id: bchMatch[1].toLowerCase(),
+          source: "BCH Nostr note link"
+        };
+      }
+
+      const genericMatch = decodedUrl.match(
+        /\/note\/([a-fA-F0-9]{64})(?:[/?#].*)?$/i
+      );
+
+      if (genericMatch) {
+        return {
+          id: genericMatch[1].toLowerCase(),
+          source: "Nostr note link"
+        };
+      }
+
+      return null;
+    }
+
+    function extractEventId(input) {
+      const value = normalizeInput(input);
+
+      if (!value) {
+        return {
+          error: "Paste a note link, event identifier, NIP-19 entity, or event JSON."
+        };
+      }
+
+      let parsedJson = null;
+
+      try {
+        parsedJson = JSON.parse(value);
+      } catch {
+        parsedJson = null;
+      }
+
+      if (
+        parsedJson &&
+        typeof parsedJson === "object" &&
+        !Array.isArray(parsedJson)
+      ) {
+        if (isHexEventId(parsedJson.id)) {
+          return {
+            id: parsedJson.id.toLowerCase(),
+            source: "event JSON",
+            event: parsedJson
+          };
+        }
+
+        if (Number.isInteger(parsedJson.kind)) {
+          return {
+            event: parsedJson,
+            source: "event JSON",
+            error: "This event has a kind, but no valid 64-character hexadecimal id."
+          };
+        }
+
+        return {
+          error: "This JSON object does not contain a valid event id."
+        };
+      }
+
+      if (isHexEventId(value)) {
+        return {
+          id: value.toLowerCase(),
+          source: "raw hexadecimal event ID"
+        };
+      }
+
+      const urlResult = extractFromUrl(value);
+
+      if (urlResult) return urlResult;
+
+      const normalized = value.startsWith("nostr:")
+        ? value.slice(6)
+        : value;
+
+      if (/^(note|nevent)1/i.test(normalized)) {
+        try {
+          return parseNip19(normalized);
+        } catch (error) {
+          return {
+            encoded: normalized,
+            error: error.message
+          };
+        }
+      }
+
+      return {
+        error:
+          "No supported event ID found. Try a BCH Nostr note link, a 64-character hexadecimal ID, note1, nevent1, or event JSON."
+      };
+    }
+
+    function showExtractedEvent(result) {
+      linkMessage.textContent = "";
+      linkResult.classList.remove("visible");
+      linkResult.innerHTML = "";
+
+      if (!result.id) {
+        linkMessage.textContent = result.error || "No event ID found.";
+
+        if (result.encoded) {
+          linkResult.innerHTML = `
+            <section class="detail-section">
+              <h3>Detected identifier</h3>
+
+              <code class="extracted-id">
+                ${escapeHtml(result.encoded)}
+              </code>
+
+              <p class="hint">
+                ${escapeHtml(result.error)}
+              </p>
+            </section>
+          `;
+
+          linkResult.classList.add("visible");
+        }
+
+        return;
+      }
+
+      const eventKind = result.event && Number.isInteger(result.event.kind)
+        ? getKind(result.event.kind)
+        : null;
+
+      const relayHints = result.relays?.length
+        ? `
+          <section class="detail-section">
+            <h3>Relay hints</h3>
+            <div class="tag-list">
+              ${result.relays.map(relay => `
+                <div class="tag-chip">${escapeHtml(relay)}</div>
+              `).join("")}
+            </div>
+          </section>
+        `
+        : "";
+
+      linkResult.innerHTML = `
+        <section class="detail-section">
+          <h3>Extracted event ID</h3>
+
+          <code class="extracted-id">
+            ${escapeHtml(result.id)}
+          </code>
+
+          <p class="hint">
+            Source: ${escapeHtml(result.source)}
+          </p>
+        </section>
+
+        ${
+          result.event
+            ? `
+              <section class="detail-section">
+                <h3>Event detected</h3>
+
+                <div class="extracted-kind">
+                  <div>
+                    <strong>
+                      Kind ${escapeHtml(result.event.kind ?? "unknown")}
+                    </strong>
+
+                    <span>
+                      ${escapeHtml(eventKind?.name || "Unknown kind")}
+                    </span>
+                  </div>
+
+                  <button
+                    id="inspectExtractedEvent"
+                    class="button primary"
+                    type="button"
+                  >Explain event</button>
+                </div>
+              </section>
+            `
+            : `
+              <section class="detail-section">
+                <h3>Next step</h3>
+
+                <p class="beginner-copy">
+                  The identifier was extracted successfully. The link identifies an event,
+                  but loading its full event JSON requires querying a relay.
+                </p>
+              </section>
+            `
+        }
+
+        ${relayHints}
+
+        <section class="detail-section">
+          <h3>Fetch from relay</h3>
+
+          <div class="relay-box">
+            <input
+              id="relayUrl"
+              class="relay-input"
+              value="${escapeHtml(result.relays?.[0] || "wss://relay.damus.io")}"
+              placeholder="wss://relay.example"
+              aria-label="Relay WebSocket URL"
+            >
+
+            <button id="fetchFromRelay" class="button success" type="button">
+              Fetch event
+            </button>
+          </div>
+
+          <div id="relayMessage" class="inspector-message"></div>
+        </section>
+      `;
+
+      linkResult.classList.add("visible");
+
+      document.getElementById("inspectExtractedEvent")
+        ?.addEventListener("click", () => {
+          eventInput.value = JSON.stringify(result.event, null, 2);
+          closeLinkExtractor();
+          openInspector();
+          explainEvent();
+        });
+
+      document.getElementById("fetchFromRelay")
+        ?.addEventListener("click", () => {
+          fetchEventFromRelay(
+            result.id,
+            document.getElementById("relayUrl").value
+          );
+        });
+    }
+
+    function loadBchExample() {
+      linkInput.value =
+        "https://bchnostr.com/note/dd2442077d7810ea4691b448d6c8cef23734a9c585300b1ac890c60d00d9e78d";
+
+      showExtractedEvent(extractEventId(linkInput.value));
+    }
+
+    function fetchEventFromRelay(eventId, relayUrl) {
+      const relayMessage = document.getElementById("relayMessage");
+      relayMessage.textContent = "Connecting to relay…";
+
+      let socket;
+
+      try {
+        socket = new WebSocket(relayUrl.trim());
+      } catch {
+        relayMessage.textContent = "That relay URL is not a valid WebSocket URL.";
+        return;
+      }
+
+      const requestId = `atlas-${Date.now()}`;
+
+      const timeout = setTimeout(() => {
+        relayMessage.textContent = "The relay did not respond in time.";
+        socket.close();
+      }, 10000);
+
+      socket.addEventListener("open", () => {
+        socket.send(JSON.stringify([
+          "REQ",
+          requestId,
+          {
+            ids: [eventId],
+            limit: 1
+          }
+        ]));
+      });
+
+      socket.addEventListener("message", event => {
+        let message;
+
+        try {
+          message = JSON.parse(event.data);
+        } catch {
+          return;
+        }
+
+        if (message[0] === "EVENT" && message[2]) {
+          clearTimeout(timeout);
+
+          const receivedEvent = message[2];
+
+          relayMessage.textContent =
+            "Event received from the selected relay.";
+
+          eventInput.value = JSON.stringify(receivedEvent, null, 2);
+          showExtractedEvent({
+            id: receivedEvent.id || eventId,
+            source: `relay ${relayUrl}`,
+            event: receivedEvent
+          });
+
+          socket.send(JSON.stringify(["CLOSE", requestId]));
+          socket.close();
+        }
+
+        if (message[0] === "EOSE") {
+          clearTimeout(timeout);
+
+          if (!message[2]) {
+            relayMessage.textContent =
+              "The relay returned no event for this ID.";
+          }
+        }
+
+        if (message[0] === "NOTICE") {
+          relayMessage.textContent =
+            `Relay notice: ${message[1] || "request rejected"}`;
+        }
+      });
+
+      socket.addEventListener("error", () => {
+        clearTimeout(timeout);
+        relayMessage.textContent =
+          "Could not connect to that relay. It may be unavailable or blocked by the browser.";
+      });
+
+      socket.addEventListener("close", () => {
+        clearTimeout(timeout);
+      });
+    }
+
     function closeOpenLayer() {
       if (inspectorOverlay.classList.contains("open")) {
         closeInspector();
+      } else if (linkOverlay.classList.contains("open")) {
+        closeLinkExtractor();
       } else if (detailOverlay.classList.contains("open")) {
         closeDetail();
       }
     }
+
+    document.getElementById("openInspector")
+      .addEventListener("click", openInspector);
+
+    document.getElementById("openLinkExtractor")
+      .addEventListener("click", openLinkExtractor);
+
+    document.getElementById("explainEvent")
+      .addEventListener("click", explainEvent);
+
+    document.getElementById("loadExample")
+      .addEventListener("click", loadExampleEvent);
+
+    document.getElementById("extractEventId")
+      .addEventListener("click", () => {
+        showExtractedEvent(extractEventId(linkInput.value));
+      });
+
+    document.getElementById("loadBchExample")
+      .addEventListener("click", loadBchExample);
+
+    document.querySelector("[data-close='inspector']")
+      .addEventListener("click", closeInspector);
+
+    document.querySelector("[data-close='link']")
+      .addEventListener("click", closeLinkExtractor);
+
+    detailOverlay.addEventListener("click", event => {
+      if (event.target === detailOverlay) closeDetail();
+    });
+
+    inspectorOverlay.addEventListener("click", event => {
+      if (event.target === inspectorOverlay) closeInspector();
+    });
+
+    linkOverlay.addEventListener("click", event => {
+      if (event.target === linkOverlay) closeLinkExtractor();
+    });
+
+    linkInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        showExtractedEvent(extractEventId(linkInput.value));
+      }
+    });
 
     search.addEventListener("input", () => {
       renderUniverse(search.value);
@@ -1623,26 +2562,17 @@
       search.focus();
     });
 
-    document.getElementById("openInspector").addEventListener("click", openInspector);
-    document.getElementById("explainEvent").addEventListener("click", explainEvent);
-    document.getElementById("loadExample").addEventListener("click", loadExampleEvent);
-
-    document.querySelectorAll("[data-close='inspector']").forEach(button => {
-      button.addEventListener("click", closeInspector);
-    });
-
-    detailOverlay.addEventListener("click", event => {
-      if (event.target === detailOverlay) closeDetail();
-    });
-
-    inspectorOverlay.addEventListener("click", event => {
-      if (event.target === inspectorOverlay) closeInspector();
-    });
-
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeOpenLayer();
+      if (event.key === "Escape") {
+        closeOpenLayer();
+      }
 
-      if (event.key === "/" && document.activeElement !== search && document.activeElement !== eventInput) {
+      if (
+        event.key === "/" &&
+        document.activeElement !== search &&
+        document.activeElement !== eventInput &&
+        document.activeElement !== linkInput
+      ) {
         event.preventDefault();
         search.focus();
       }
@@ -1650,25 +2580,37 @@
 
     window.addEventListener("popstate", () => {
       const match = window.location.hash.match(/^#kind\/(\d+)$/);
-      if (match) openKind(Number(match[1]), false);
-      else if (detailOverlay.classList.contains("open")) closeDetail();
+
+      if (match) {
+        openKind(Number(match[1]), false);
+      } else if (detailOverlay.classList.contains("open")) {
+        closeDetail();
+      }
     });
 
     window.addEventListener("hashchange", () => {
       const match = window.location.hash.match(/^#kind\/(\d+)$/);
-      if (match) openKind(Number(match[1]), false);
+
+      if (match) {
+        openKind(Number(match[1]), false);
+      }
     });
 
     setInterval(() => {
-      placeholderIndex = (placeholderIndex + 1) % examples.length;
-      if (document.activeElement !== search && !search.value) {
-        search.placeholder = `Try “${examples[placeholderIndex]}”`;
+      placeholderIndex = (placeholderIndex + 1) % searchExamples.length;
+
+      if (
+        document.activeElement !== search &&
+        !search.value
+      ) {
+        search.placeholder = `Try “${searchExamples[placeholderIndex]}”`;
       }
     }, 3000);
 
     renderUniverse();
 
     const initialKind = window.location.hash.match(/^#kind\/(\d+)$/);
+
     if (initialKind) {
       openKind(Number(initialKind[1]), false);
     }
