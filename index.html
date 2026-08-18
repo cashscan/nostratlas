@@ -24,7 +24,6 @@
       --yellow: #f2c96d;
       --danger: #f28191;
       --shadow: 0 24px 90px rgba(0,0,0,.46);
-      --radius: 17px;
     }
 
     * {
@@ -115,6 +114,38 @@
 
     .brand-mark span {
       transform: rotate(-45deg);
+    }
+
+    .source-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .source-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .source-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 10px rgba(242,201,109,.7);
+    }
+
+    .source-dot.live {
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(120,214,166,.7);
+    }
+
+    .source-dot.fallback {
+      background: var(--yellow);
+      box-shadow: 0 0 10px rgba(242,201,109,.7);
     }
 
     .source-link {
@@ -800,6 +831,10 @@
         display: none;
       }
 
+      .source-area {
+        margin-left: auto;
+      }
+
       .hero {
         margin-bottom: 43px;
       }
@@ -859,12 +894,19 @@
         <span>NOSTR ATLAS</span>
       </div>
 
-      <a
-        class="source-link"
-        href="https://github.com/nostr-protocol/registry-of-kinds"
-        target="_blank"
-        rel="noopener"
-      >Registry source ↗</a>
+      <div class="source-area">
+        <span class="source-status">
+          <span id="sourceDot" class="source-dot"></span>
+          <span id="sourceStatus">Loading kinds…</span>
+        </span>
+
+        <a
+          class="source-link"
+          href="https://nostrbook.dev/kinds/"
+          target="_blank"
+          rel="noopener"
+        >Kinds source ↗</a>
+      </div>
     </header>
 
     <section class="hero" aria-labelledby="page-title">
@@ -1033,11 +1075,11 @@
 
         <div class="sheet-actions">
           <button id="extractEventId" class="button primary" type="button">
-            Extract event ID
+            Extract Event ID
           </button>
 
           <button id="loadBchExample" class="button" type="button">
-            Load BCH Nostr example
+            Load BCH Nostr Example
           </button>
         </div>
 
@@ -1049,284 +1091,110 @@
   </div>
 
   <script>
-    const KIND_DATA = [
-      {
-        kind: 0,
-        name: "Profile",
-        description: "A user's profile metadata.",
-        category: "Identity",
-        aliases: ["user metadata", "about", "avatar"],
-        nips: ["NIP-01"],
-        status: "official",
-        structure: ["kind", "content"],
-        tags: [],
-        fields: {
-          content: "A JSON string containing profile metadata such as name, about, and picture."
-        },
-        related: [1, 3, 4],
-        explanation: "A profile event describes the person or account behind a public key. Clients commonly read its content as a small JSON metadata object."
-      },
-      {
-        kind: 1,
-        name: "Short Text Note",
-        description: "A public text post shared with the Nostr network.",
-        category: "Social",
-        aliases: ["text note", "post", "status", "tweet"],
-        nips: ["NIP-01", "NIP-10"],
-        status: "official",
-        structure: ["kind", "content", "e", "p", "t"],
-        tags: ["e", "p", "t"],
-        fields: {
-          content: "The text of the note.",
-          e: "References another event, commonly for replies or quoted context.",
-          p: "References a participant or mentioned public key.",
-          t: "A topic or hashtag."
-        },
-        related: [6, 7, 1111],
-        explanation: "A public text note is the simplest social event: someone publishes text that clients can display, reply to, repost, or react to."
-      },
-      {
-        kind: 3,
-        name: "Follow List",
-        description: "A user's list of followed public keys.",
-        category: "Identity",
-        aliases: ["contacts", "following", "social graph"],
-        nips: ["NIP-02"],
-        status: "official",
-        structure: ["kind", "p"],
-        tags: ["p"],
-        fields: {
-          p: "Each p tag identifies a public key the author follows, with optional relay and petname information."
-        },
-        related: [0, 1],
-        explanation: "A follow-list event records which public keys a user wants their clients to treat as followed accounts."
-      },
-      {
-        kind: 4,
-        name: "Encrypted Direct Message",
-        description: "A legacy encrypted direct message event.",
-        category: "Messaging",
-        aliases: ["DM", "private message", "encrypted message"],
-        nips: ["NIP-04"],
-        status: "deprecated",
-        structure: ["kind", "content", "p"],
-        tags: ["p"],
-        fields: {
-          p: "Identifies the recipient public key.",
-          content: "Encrypted message content."
-        },
-        related: [14, 1059],
-        explanation: "This is the older encrypted direct-message format. New private messaging systems generally use newer NIPs and event kinds."
-      },
-      {
-        kind: 6,
-        name: "Repost",
-        description: "A way to share or boost another event.",
-        category: "Social",
-        aliases: ["boost", "re-share", "retweet"],
-        nips: ["NIP-18"],
-        status: "official",
-        structure: ["kind", "content", "e", "p", "k"],
-        tags: ["e", "p", "k"],
-        fields: {
-          e: "The event being reposted.",
-          p: "The author of the event being reposted.",
-          k: "The kind number of the referenced event.",
-          content: "Often contains a serialized copy of the original event."
-        },
-        related: [1, 7, 1111],
-        explanation: "A repost points to another event so clients can show it to more people as something the author chose to share."
-      },
-      {
-        kind: 7,
-        name: "Reaction",
-        description: "A reaction to another Nostr event.",
-        category: "Social",
-        aliases: ["like", "emoji", "reaction", "react"],
-        nips: ["NIP-25"],
-        status: "official",
-        structure: ["kind", "content", "e", "p", "k"],
-        tags: ["e", "p", "k"],
-        fields: {
-          e: "The event being reacted to.",
-          p: "The author of the event being reacted to.",
-          k: "The kind number of the referenced event.",
-          content: "The reaction content, often +, -, or an emoji."
-        },
-        related: [1, 6, 1111],
-        explanation: "People use this event to react to another event. The referenced event and its author are normally included in tags."
-      },
-      {
-        kind: 14,
-        name: "Direct Message",
-        description: "A private message used within the modern NIP-17 flow.",
-        category: "Messaging",
-        aliases: ["private message", "DM", "conversation"],
-        nips: ["NIP-17"],
-        status: "official",
-        structure: ["kind", "content", "p"],
-        tags: ["p"],
-        fields: {
-          p: "Identifies the intended recipient inside the private-message flow.",
-          content: "The message body after the appropriate wrapping and encryption layers."
-        },
-        related: [15, 1059],
-        explanation: "A kind 14 rumor represents a private message inside NIP-17's layered messaging flow. It is normally wrapped before being sent through relays."
-      },
-      {
-        kind: 20,
-        name: "Picture",
-        description: "A picture event shared on Nostr.",
-        category: "Media",
-        aliases: ["image", "photo", "picture"],
-        nips: ["NIP-68"],
-        status: "draft",
-        structure: ["kind", "content", "imeta", "alt"],
-        tags: ["imeta", "alt"],
-        fields: {
-          imeta: "Inline media metadata such as URL, dimensions, MIME type, and alt text.",
-          alt: "A text alternative describing the image.",
-          content: "Optional accompanying text."
-        },
-        related: [1, 7],
-        explanation: "A picture event gives clients a structured way to publish an image with useful media metadata and accessible alternative text."
-      },
-      {
-        kind: 21,
-        name: "Video Event",
-        description: "A video-oriented event published to Nostr.",
-        category: "Media",
-        aliases: ["video", "stream", "media"],
-        nips: ["NIP-71"],
-        status: "draft",
-        structure: ["kind", "content", "imeta", "title", "thumb"],
-        tags: ["imeta", "title", "thumb"],
-        fields: {
-          imeta: "Metadata describing the video media.",
-          title: "A title for the video.",
-          thumb: "A thumbnail URL.",
-          content: "Optional description or accompanying text."
-        },
-        related: [1, 7],
-        explanation: "A video event describes video media and its presentation metadata so different clients can display it consistently."
-      },
-      {
-        kind: 1059,
-        name: "Gift Wrapped Event",
-        description: "A sealed and wrapped event used for private delivery.",
-        category: "Messaging",
-        aliases: ["gift wrap", "private delivery", "sealed event"],
-        nips: ["NIP-59"],
-        status: "official",
-        structure: ["kind", "content", "p"],
-        tags: ["p"],
-        fields: {
-          p: "The intended recipient.",
-          content: "Encrypted, sealed event content."
-        },
-        related: [14, 15, 4],
-        explanation: "A gift-wrapped event hides the original event and sender details from relays and unintended observers."
-      },
-      {
-        kind: 1111,
-        name: "Comment",
-        description: "A structured comment attached to another event.",
-        category: "Social",
-        aliases: ["reply", "comment", "discussion"],
-        nips: ["NIP-22"],
-        status: "draft",
-        structure: ["kind", "content", "E", "P", "e", "p"],
-        tags: ["E", "P", "e", "p"],
-        fields: {
-          E: "The root event being discussed.",
-          P: "The root event author.",
-          e: "The immediate event being replied to.",
-          p: "The immediate event author.",
-          content: "The comment text."
-        },
-        related: [1, 7, 30023],
-        explanation: "A comment is a reply that carries enough references for clients to place it inside a conversation or discussion thread."
-      },
-      {
-        kind: 30023,
-        name: "Long-form Content",
-        description: "An article or long-form post that can be updated with the same identifier.",
-        category: "Content",
-        aliases: ["article", "blog post", "essay", "long-form", "longform"],
-        nips: ["NIP-23"],
-        status: "official",
-        addressability: "addressable",
-        structure: ["kind", "content", "d", "title", "image", "summary", "published_at"],
-        tags: ["d", "title", "image", "summary", "published_at"],
-        fields: {
-          d: "An identifier for the article. Publishing another event with the same author and d value updates the article.",
-          title: "The article title.",
-          image: "A URL for an image shown with the article.",
-          summary: "A short description of the article.",
-          published_at: "The first publication timestamp, represented as a stringified Unix timestamp.",
-          content: "The article body, typically written in Markdown."
-        },
-        related: [1, 7, 1111, 30024],
-        explanation: "An article or long-form post. Authors can update the same article by publishing another event with the same identifier."
-      },
-      {
-        kind: 30024,
-        name: "Long-form Draft",
-        description: "A draft format related to long-form content.",
-        category: "Content",
-        aliases: ["article draft", "draft", "long-form draft"],
-        nips: ["NIP-23"],
-        status: "deprecated",
-        addressability: "addressable",
-        structure: ["kind", "content", "d", "title", "image", "summary", "published_at"],
-        tags: ["d", "title", "image", "summary", "published_at"],
-        fields: {
-          d: "The draft identifier.",
-          title: "The draft title.",
-          content: "The draft article body."
-        },
-        related: [30023, 1],
-        explanation: "Kind 30024 was used for long-form drafts with the same basic structure as kind 30023. It is marked deprecated in the current NIP-23 documentation."
-      },
-      {
-        kind: 31922,
-        name: "Date-Based Calendar Event",
-        description: "A calendar event associated with a date.",
-        category: "Calendar",
-        aliases: ["calendar", "appointment", "event", "date"],
-        nips: ["NIP-52"],
-        status: "draft",
-        addressability: "addressable",
-        structure: ["kind", "content", "d", "title", "start", "end"],
-        tags: ["d", "title", "start", "end"],
-        fields: {
-          d: "The calendar event identifier.",
-          title: "The event title.",
-          start: "The event start date or timestamp.",
-          end: "The event end date or timestamp.",
-          content: "Additional event description."
-        },
-        related: [31923, 31924],
-        explanation: "A date-based calendar event describes something happening on a particular day or date range."
-      },
-      {
-        kind: 9735,
-        name: "Zap Receipt",
-        description: "A receipt showing that a Lightning zap was completed.",
-        category: "Lightning",
-        aliases: ["zap", "lightning", "tip", "payment"],
-        nips: ["NIP-57"],
-        status: "official",
-        structure: ["kind", "content", "bolt11", "description", "p"],
-        tags: ["bolt11", "description", "p"],
-        fields: {
-          bolt11: "The Lightning invoice used for the payment.",
-          description: "The zap request description.",
-          p: "The recipient public key."
-        },
-        related: [1, 7],
-        explanation: "A zap receipt proves that a Lightning payment associated with a Nostr zap request was paid."
-      }
+    const KINDS_SOURCE = "https://nostrbook.dev/kinds/";
+    const DEFAULT_RELAY = "wss://relay.bchnostr.com";
+
+    const FALLBACK_KINDS = [
+      [0, "User Metadata", "Profile information and user settings", "NIP-01"],
+      [1, "Short Text Note", "The basic text note/post", "NIP-10"],
+      [3, "Follow List", "List of followed profiles", "NIP-02"],
+      [4, "Encrypted Direct Message", "Private messages (deprecated)", "NIP-04"],
+      [5, "Event Deletion Request", "Request to delete previously published events", "NIP-09"],
+      [6, "Repost", "Sharing a text note with followers", "NIP-18"],
+      [7, "Reaction", "Like, dislike, or emoji reaction to an event", "NIP-25"],
+      [8, "Badge Award", "Award badges to users", "NIP-58"],
+      [9, "Chat Message", "Simple chat messaging", "NIP-C7"],
+      [10, "Group Chat Threaded Reply", "Threaded replies in group chats", "NIP-29"],
+      [11, "Thread", "Discussion thread root", "NIP-7D"],
+      [12, "Group Thread Reply", "Replies to threads in group chats", "NIP-29"],
+      [13, "Seal", "Encrypted wrapper for an unsigned event", "NIP-59"],
+      [14, "Direct Message", "Private messaging with enhanced security", "NIP-17"],
+      [15, "File Message", "Encrypted file sharing", "NIP-17"],
+      [16, "Generic Repost", "Reposting non-text-note content", "NIP-18"],
+      [17, "Reaction to a Website", "Reaction to web content", "NIP-25"],
+      [20, "Picture", "Image-centric posts", "NIP-68"],
+      [21, "Video Event", "Video-centric content", "NIP-71"],
+      [22, "Short-form Portrait Video", "Vertical short-form video content", "NIP-71"],
+      [40, "Channel Creation", "Create a public chat channel", "NIP-28"],
+      [41, "Channel Metadata", "Update chat channel information", "NIP-28"],
+      [42, "Channel Message", "Message posted to a channel", "NIP-28"],
+      [43, "Channel Hide Message", "Hide a specific channel message", "NIP-28"],
+      [44, "Channel Mute User", "Mute a user in a channel", "NIP-28"],
+      [62, "Request to Vanish", "Request for complete data removal", "NIP-62"],
+      [64, "Chess (PGN)", "Chess games in PGN format", "NIP-64"],
+      [1018, "Poll Response", "Vote on a poll", "NIP-88"],
+      [1059, "Gift Wrap", "Encrypted outer wrapper for secure messaging", "NIP-59"],
+      [1063, "File Metadata", "Metadata for shared files", "NIP-94"],
+      [1068, "Poll", "Create a poll with voting options", "NIP-88"],
+      [1111, "Comment", "Structured comments on content", "NIP-22"],
+      [1337, "Code Snippet", "Programming code with metadata", "NIP-C0"],
+      [1617, "Git Patch", "Proposed changes to a Git repository using patches", "NIP-34"],
+      [1621, "Git Issue", "Bug reports or feature requests", "NIP-34"],
+      [1984, "Reporting", "Report objectionable content", "NIP-56"],
+      [1985, "Label", "Apply labels to events and entities", "NIP-32"],
+      [2003, "Torrent", "BitTorrent content index", "NIP-35"],
+      [2004, "Torrent Comment", "Comments on torrents", "NIP-35"],
+      [4550, "Community Post Approval", "Approval of posts by moderators", "NIP-72"],
+      [7374, "Cashu Quote", "Tracks mint payment quotes", "NIP-60"],
+      [7375, "Cashu Token", "Stores unspent Cashu proofs", "NIP-60"],
+      [7376, "Nutzap Redemption", "Records redemption of Nutzap tokens", "NIP-61"],
+      [9000, "Group User Addition", "Add a user to a group or modify roles", "NIP-29"],
+      [9001, "Group User Removal", "Remove a user from a group", "NIP-29"],
+      [9002, "Group Metadata Edit", "Modify a group's metadata", "NIP-29"],
+      [9005, "Group Event Deletion", "Delete or hide a group event", "NIP-29"],
+      [9007, "Group Creation", "Create a new relay-based group", "NIP-29"],
+      [9008, "Group Deletion", "Delete or deactivate a group", "NIP-29"],
+      [9009, "Group Invite Creation", "Create an invitation code", "NIP-29"],
+      [9021, "Group Join Request", "Request admission to a group", "NIP-29"],
+      [9022, "Group Leave Request", "Request to leave a group", "NIP-29"],
+      [9041, "Zap Goal", "Fundraising target for Lightning payments", "NIP-75"],
+      [9321, "Nutzap", "P2PK Cashu token payment", "NIP-61"],
+      [9734, "Zap Request", "Request for a Lightning payment invoice", "NIP-57"],
+      [9735, "Zap Receipt", "Confirmation of a Lightning payment", "NIP-57"],
+      [9802, "Highlights", "Highlighted content excerpts", "NIP-84"],
+      [10000, "Mute List", "Content and users to hide from feeds", "NIP-51"],
+      [10001, "Pinned Notes", "Notes to showcase on a profile", "NIP-51"],
+      [10002, "Relay List Metadata", "User's preferred relays for discovery", "NIP-65"],
+      [10003, "Bookmarks", "Saved content for later reference", "NIP-51"],
+      [10004, "Communities", "Communities the user belongs to", "NIP-51"],
+      [10005, "Public Chats", "Chat channels the user participates in", "NIP-51"],
+      [10006, "Blocked Relays", "Relays clients should never connect to", "NIP-51"],
+      [10007, "Search Relays", "Relays optimized for search queries", "NIP-51"],
+      [10009, "Simple Groups", "Private group memberships", "NIP-51"],
+      [10013, "Private Relay List", "Encrypted list of relays", "NIP-37"],
+      [10019, "Nutzap Informational", "Configuration for receiving Nutzaps", "NIP-61"],
+      [10030, "Emojis", "Preferred emojis and emoji sets", "NIP-51"],
+      [10040, "Trusted Service Providers", "Authorized trusted assertion providers", "NIP-85"],
+      [10050, "DM Relays", "Preferred relays for direct messages", "NIP-17"],
+      [17375, "Cashu Wallet", "Cashu wallet configuration", "NIP-60"],
+      [30000, "Follow Sets", "Categorized lists of followed profiles", "NIP-51"],
+      [30002, "Relay Sets", "Categorized relay groups", "NIP-51"],
+      [30003, "Bookmark Sets", "Categorized bookmark collections", "NIP-51"],
+      [30007, "Kind Mute Sets", "Mute users for specific event kinds", "NIP-51"],
+      [30008, "Profile Badges", "Badges displayed on a profile", "NIP-58"],
+      [30009, "Badge Definition", "Defines a badge that can be awarded", "NIP-58"],
+      [30023, "Long-form Content", "Articles and blog posts", "NIP-23"],
+      [30024, "Draft Long-form Content", "Unpublished drafts of articles", "NIP-23"],
+      [30030, "Emoji Sets", "Categorized emoji groups", "NIP-51"],
+      [30078, "Arbitrary custom app data", "Application-specific data storage", "NIP-78"],
+      [30382, "User Trusted Assertions", "Computed metrics about users", "NIP-85"],
+      [30383, "Event Trusted Assertions", "Computed metrics about events", "NIP-85"],
+      [30384, "Addressable Event Trusted Assertions", "Computed metrics about addressable events", "NIP-85"],
+      [30385, "External Identifier Trusted Assertions", "Computed metrics about external entities", "NIP-85"],
+      [30617, "Git Repository Announcement", "Announce a Git repository", "NIP-34"],
+      [30618, "Git Repository State Announcement", "Announce repository state", "NIP-34"],
+      [31234, "Draft Event", "Private wrapper for any draft event", "NIP-37"],
+      [31922, "Date-Based Calendar Event", "Calendar events on specific dates", "NIP-52"],
+      [31923, "Time-Based Calendar Event", "Calendar events at specific times", "NIP-52"],
+      [31924, "Calendar", "Collection of calendar events", "NIP-52"],
+      [31925, "Calendar Event RSVP", "Response to a calendar invitation", "NIP-52"],
+      [31989, "Handler Recommendation", "Recommends apps for event kinds", "NIP-89"],
+      [31990, "Handler Information", "Explains how apps handle event kinds", "NIP-89"],
+      [34550, "Community Definition", "Definition of a moderated community", "NIP-72"],
+      [39000, "Group Metadata", "Metadata for a relay-based group", "NIP-29"],
+      [39001, "Group Admins", "List of group administrators", "NIP-29"],
+      [39002, "Group Members", "List of group members", "NIP-29"],
+      [39003, "Group Roles", "Defines administrative roles", "NIP-29"]
     ];
 
     const CATEGORY_ORDER = [
@@ -1335,27 +1203,14 @@
       "Messaging",
       "Media",
       "Content",
+      "Communities",
       "Calendar",
-      "Lightning"
+      "Lightning",
+      "Development",
+      "Other"
     ];
 
-    const NIP_URLS = {
-      "NIP-01": "https://nips.nostr.com/1",
-      "NIP-02": "https://nips.nostr.com/2",
-      "NIP-04": "https://nips.nostr.com/4",
-      "NIP-10": "https://nips.nostr.com/10",
-      "NIP-17": "https://nips.nostr.com/17",
-      "NIP-18": "https://nips.nostr.com/18",
-      "NIP-22": "https://nips.nostr.com/22",
-      "NIP-23": "https://nips.nostr.com/23",
-      "NIP-25": "https://nips.nostr.com/25",
-      "NIP-52": "https://nips.nostr.com/52",
-      "NIP-57": "https://nips.nostr.com/57",
-      "NIP-59": "https://nips.nostr.com/59",
-      "NIP-68": "https://nips.nostr.com/68",
-      "NIP-71": "https://nips.nostr.com/71"
-    };
-
+    const NIP_URLS = {};
     const FIELD_EXPLANATIONS = {
       id: "The event identifier: a hash of the serialized event data.",
       pubkey: "The public key of the event author.",
@@ -1371,6 +1226,8 @@
     const clearSearch = document.getElementById("clearSearch");
     const resultCount = document.getElementById("resultCount");
     const noResults = document.getElementById("noResults");
+    const sourceStatus = document.getElementById("sourceStatus");
+    const sourceDot = document.getElementById("sourceDot");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const detailSheet = document.getElementById("detailSheet");
@@ -1385,6 +1242,7 @@
     const linkResult = document.getElementById("linkResult");
     const linkMessage = document.getElementById("linkMessage");
 
+    let KIND_DATA = [];
     let lastFocusedElement = null;
     let placeholderIndex = 0;
 
@@ -1408,6 +1266,399 @@
 
     function getKind(kindNumber) {
       return KIND_DATA.find(item => item.kind === Number(kindNumber));
+    }
+
+    function nipNumber(nip) {
+      return String(nip || "").replace(/^NIP-/i, "");
+    }
+
+    function nipUrl(nip) {
+      const number = nipNumber(nip);
+
+      if (/^\d+$/.test(number)) {
+        return `https://nips.nostr.com/${number}`;
+      }
+
+      return `https://github.com/nostr-protocol/nips/blob/master/${number.toLowerCase()}.md`;
+    }
+
+    function inferCategory(kind, name, nip) {
+      const text = `${kind} ${name} ${nip}`.toLowerCase();
+      const numericKind = Number(kind);
+
+      if (
+        /reaction|repost|comment|note|thread|poll|highlight|report|label/.test(text)
+      ) return "Social";
+
+      if (
+        /profile|metadata|follow|bookmark|mute|relay list|emoji|trusted|handler/.test(text) ||
+        numericKind === 0 ||
+        numericKind === 3
+      ) return "Identity";
+
+      if (
+        /message|chat|group|channel|seal|gift wrap|dm relay|private/.test(text)
+      ) return "Messaging";
+
+      if (/picture|video|file|image|media/.test(text)) return "Media";
+      if (/article|long-form|draft|content|snippet|patch|issue|repository|code|torrent/.test(text)) return "Content";
+      if (/calendar|rsvp|date-based|time-based/.test(text)) return "Calendar";
+      if (/zap|lightning|cashu|nutzap|wallet|payment/.test(text)) return "Lightning";
+      if (/git|repository|code|patch|issue/.test(text)) return "Development";
+      if (/community|group/.test(text)) return "Communities";
+
+      return "Other";
+    }
+
+    function inferAddressability(kind) {
+      const number = Number(kind);
+
+      if (number === 0 || number === 3 || (number >= 10000 && number < 20000)) {
+        return "replaceable";
+      }
+
+      if (number >= 20000 && number < 30000) {
+        return "ephemeral";
+      }
+
+      if (number >= 30000 && number < 40000) {
+        return "addressable";
+      }
+
+      return "regular";
+    }
+
+    function inferStatus(name, description) {
+      const text = `${name} ${description}`.toLowerCase();
+
+      if (text.includes("deprecated")) return "deprecated";
+      return "registry";
+    }
+
+    function buildExplanation(item) {
+      const lower = `${item.name} ${item.description}`.toLowerCase();
+
+      if (item.kind === 1) {
+        return "A public text note is the simplest social event: someone publishes text that clients can display, reply to, repost, or react to.";
+      }
+
+      if (item.kind === 7) {
+        return "People use this event to react to another event. The referenced event and its author are normally included in tags.";
+      }
+
+      if (item.kind === 30023) {
+        return "An article or long-form post. Authors can update the same article by publishing another event with the same identifier.";
+      }
+
+      if (item.kind === 0) {
+        return "A profile event describes the person or account behind a public key. Clients commonly read its content as a small JSON metadata object.";
+      }
+
+      if (lower.includes("calendar")) {
+        return "A calendar-related event describes something scheduled, published, or associated with a date or time.";
+      }
+
+      if (lower.includes("message") || lower.includes("chat")) {
+        return "A messaging event carries information between participants, channels, or groups.";
+      }
+
+      if (lower.includes("repost")) {
+        return "A repost points to another event so clients can show it to more people as something the author chose to share.";
+      }
+
+      if (lower.includes("reaction")) {
+        return "A reaction connects one event to another and expresses an opinion, response, or emoji.";
+      }
+
+      return `${item.name} is a Nostr event kind defined for ${item.description.toLowerCase()}.`;
+    }
+
+    function buildStructure(item) {
+      const lower = `${item.name} ${item.description}`.toLowerCase();
+
+      if (item.kind === 30023) {
+        return ["kind", "content", "d", "title", "image", "summary"];
+      }
+
+      if (item.kind === 1) {
+        return ["kind", "content", "e", "p", "t"];
+      }
+
+      if (item.kind === 7) {
+        return ["kind", "content", "e", "p", "k"];
+      }
+
+      if (
+        lower.includes("message") ||
+        lower.includes("chat") ||
+        lower.includes("group")
+      ) {
+        return ["kind", "content", "p", "e"];
+      }
+
+      if (
+        lower.includes("list") ||
+        lower.includes("set") ||
+        lower.includes("relay") ||
+        lower.includes("bookmark")
+      ) {
+        return ["kind", "content", "tags"];
+      }
+
+      return ["kind", "content", "tags"];
+    }
+
+    function buildTags(item) {
+      const lower = `${item.name} ${item.description}`.toLowerCase();
+
+      if (item.kind === 30023) {
+        return ["d", "title", "image", "summary", "published_at"];
+      }
+
+      if (item.kind === 7) {
+        return ["e", "p", "k"];
+      }
+
+      if (item.kind === 1) {
+        return ["e", "p", "t"];
+      }
+
+      if (lower.includes("calendar")) {
+        return ["d", "title", "start", "end"];
+      }
+
+      if (lower.includes("reaction")) {
+        return ["e", "p", "k"];
+      }
+
+      if (lower.includes("message") || lower.includes("chat")) {
+        return ["p", "e"];
+      }
+
+      if (lower.includes("profile") || lower.includes("follow")) {
+        return ["p"];
+      }
+
+      return [];
+    }
+
+    function buildFields(item) {
+      const fields = {};
+
+      (item.tags || []).forEach(tag => {
+        fields[tag] = tagExplanation(tag);
+      });
+
+      if (item.kind === 0) {
+        fields.content = "A JSON string containing profile metadata such as name, about, and picture.";
+      }
+
+      if (item.kind === 1) {
+        fields.content = "The text of the note.";
+      }
+
+      if (item.kind === 7) {
+        fields.content = "The reaction content, often +, -, or an emoji.";
+      }
+
+      if (item.kind === 30023) {
+        fields.content = "The article body, typically written in Markdown.";
+      }
+
+      return fields;
+    }
+
+    function tagExplanation(tag) {
+      const explanations = {
+        e: "References another event.",
+        p: "References another public key.",
+        a: "References an addressable or replaceable event.",
+        d: "An identifier used to address or update an event.",
+        t: "A topic or hashtag.",
+        k: "The kind number of the referenced event.",
+        title: "A human-readable title.",
+        image: "A URL for an image.",
+        summary: "A short description.",
+        published_at: "The publication timestamp.",
+        start: "The event start date or timestamp.",
+        end: "The event end date or timestamp.",
+        alt: "Alternative text.",
+        imeta: "Inline media metadata.",
+        bolt11: "A Lightning invoice.",
+        description: "A payment or event description."
+      };
+
+      return explanations[tag] || "A protocol-specific tag.";
+    }
+
+    function normalizeKind(raw) {
+      const kind = Number(raw[0]);
+      const name = String(raw[1] || `Kind ${kind}`).trim();
+      const description = String(raw[2] || "No description supplied.").trim();
+      const nip = String(raw[3] || "Unknown").trim();
+
+      const item = {
+        kind,
+        name,
+        description,
+        category: inferCategory(kind, name, nip),
+        aliases: [name, description],
+        nips: nip === "Unknown" ? [] : [nip],
+        status: inferStatus(name, description),
+        addressability: inferAddressability(kind),
+        structure: [],
+        tags: [],
+        fields: {},
+        related: [],
+        explanation: ""
+      };
+
+      item.structure = buildStructure(item);
+      item.tags = buildTags(item);
+      item.fields = buildFields(item);
+      item.explanation = buildExplanation(item);
+
+      return item;
+    }
+
+    function fallbackKinds() {
+      return FALLBACK_KINDS.map(normalizeKind);
+    }
+
+    function parseNostrbookKinds(markdown) {
+      const rows = [];
+      const lines = markdown.split(/\r?\n/);
+
+      for (const line of lines) {
+        const match = line.match(
+          /^\s*\|?\s*(\d+)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|?\s*$/
+        );
+
+        if (!match) continue;
+
+        const kind = Number(match[1]);
+        const name = match[2].trim();
+        const description = match[3].trim();
+        const nip = match[4].trim();
+
+        if (
+          Number.isInteger(kind) &&
+          name &&
+          description &&
+          !/^kind$/i.test(name)
+        ) {
+          rows.push([kind, name, description, nip]);
+        }
+      }
+
+      return rows;
+    }
+
+    function parseKindsFromHtml(html) {
+      const documentParser = new DOMParser();
+      const parsed = documentParser.parseFromString(html, "text/html");
+      const rows = [];
+
+      parsed.querySelectorAll("table tr").forEach(row => {
+        const cells = Array.from(row.querySelectorAll("th, td"))
+          .map(cell => cell.textContent.trim());
+
+        if (cells.length < 4) return;
+        if (!/^\d+$/.test(cells[0])) return;
+
+        rows.push([
+          Number(cells[0]),
+          cells[1],
+          cells[2],
+          cells[3]
+        ]);
+      });
+
+      return rows;
+    }
+
+    async function loadKinds() {
+      const fallback = fallbackKinds();
+
+      try {
+        const response = await fetch(KINDS_SOURCE, {
+          method: "GET",
+          mode: "cors",
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`Source returned HTTP ${response.status}`);
+        }
+
+        const body = await response.text();
+        let rows = parseKindsFromHtml(body);
+
+        if (!rows.length) {
+          rows = parseNostrbookKinds(body);
+        }
+
+        if (!rows.length) {
+          throw new Error("No kind rows found.");
+        }
+
+        KIND_DATA = rows
+          .map(normalizeKind)
+          .filter(item => Number.isInteger(item.kind))
+          .sort((a, b) => a.kind - b.kind);
+
+        sourceStatus.textContent = `Live Nostrbook · ${KIND_DATA.length} kinds`;
+        sourceDot.className = "source-dot live";
+      } catch (error) {
+        KIND_DATA = fallback;
+
+        sourceStatus.textContent =
+          `Fallback data · ${KIND_DATA.length} kinds`;
+
+        sourceDot.className = "source-dot fallback";
+      }
+
+      renderUniverse(search.value);
+      openInitialKind();
+    }
+
+    function getRelatedKinds(item) {
+      const relationships = [];
+
+      if (item.kind === 1) {
+        relationships.push(6, 7, 1111);
+      }
+
+      if (item.kind === 7) {
+        relationships.push(1, 6, 1111);
+      }
+
+      if (item.kind === 30023) {
+        relationships.push(1, 7, 1111, 30024);
+      }
+
+      if (item.kind === 14) {
+        relationships.push(13, 15, 1059);
+      }
+
+      if (item.kind >= 31922 && item.kind <= 31925) {
+        relationships.push(31922, 31923, 31924, 31925);
+      }
+
+      const sameNip = KIND_DATA
+        .filter(candidate =>
+          candidate.kind !== item.kind &&
+          candidate.nips.some(nip =>
+            item.nips.includes(nip)
+          )
+        )
+        .slice(0, 5)
+        .map(candidate => candidate.kind);
+
+      return [...new Set([...relationships, ...sameNip])]
+        .map(getKind)
+        .filter(Boolean)
+        .slice(0, 8);
     }
 
     function searchableText(item) {
@@ -1448,13 +1699,20 @@
 
         section.innerHTML = `
           <h3 class="category-heading">${escapeHtml(category)}</h3>
+
           <div class="kind-grid">
             ${categoryKinds.map(item => `
-              <button class="kind-card" type="button" data-kind="${item.kind}">
+              <button
+                class="kind-card"
+                type="button"
+                data-kind="${item.kind}"
+              >
                 <span class="kind-number">${item.kind}</span>
                 <span class="kind-name">${escapeHtml(item.name)}</span>
                 <span class="kind-description">${escapeHtml(item.description)}</span>
-                <span class="card-meta">${escapeHtml(item.nips?.[0] || item.status)}</span>
+                <span class="card-meta">
+                  ${escapeHtml(item.nips?.[0] || item.status)}
+                </span>
               </button>
             `).join("")}
           </div>
@@ -1470,7 +1728,9 @@
       noResults.style.display = filtered.length ? "none" : "block";
 
       document.querySelectorAll("[data-kind]").forEach(card => {
-        card.addEventListener("click", () => openKind(Number(card.dataset.kind)));
+        card.addEventListener("click", () => {
+          openKind(Number(card.dataset.kind));
+        });
       });
     }
 
@@ -1479,7 +1739,7 @@
     }
 
     function statusClass(status) {
-      if (status === "official") return "green";
+      if (status === "official" || status === "registry") return "green";
       if (status === "draft" || status === "experimental") return "yellow";
       if (status === "deprecated") return "danger";
       return "";
@@ -1529,21 +1789,21 @@
     }
 
     function renderRelated(item) {
-      return (item.related || []).map(kindNumber => {
-        const related = getKind(kindNumber);
+      const related = getRelatedKinds(item);
 
-        return related
-          ? `
-            <button
-              class="related-chip"
-              type="button"
-              data-related-kind="${related.kind}"
-            >
-              ${related.kind} · ${escapeHtml(related.name)}
-            </button>
-          `
-          : "";
-      }).join("");
+      if (!related.length) {
+        return `<span class="tag-chip">No related kinds loaded.</span>`;
+      }
+
+      return related.map(candidate => `
+        <button
+          class="related-chip"
+          type="button"
+          data-related-kind="${candidate.kind}"
+        >
+          ${candidate.kind} · ${escapeHtml(candidate.name)}
+        </button>
+      `).join("");
     }
 
     function openKind(kindNumber, updateHash = true) {
@@ -1571,7 +1831,7 @@
         ? item.tags.map(tag => `
             <div class="tag-chip">
               <strong>${escapeHtml(tag)}</strong>
-              <span>${escapeHtml(item.fields?.[tag] || "Protocol-specific tag.")}</span>
+              <span>${escapeHtml(item.fields?.[tag] || tagExplanation(tag))}</span>
             </div>
           `).join("")
         : `<span class="tag-chip">No documented tags in the loaded data.</span>`;
@@ -1586,16 +1846,21 @@
 
             <div class="badges">
               ${(item.nips || []).map(nip => `
-                <span class="badge accent">${escapeHtml(nip)}</span>
+                <a
+                  class="badge accent"
+                  href="${escapeHtml(nipUrl(nip))}"
+                  target="_blank"
+                  rel="noopener"
+                >${escapeHtml(nip)}</a>
               `).join("")}
 
               <span class="badge ${statusClass(item.status)}">
                 ${escapeHtml(statusLabel(item.status))}
               </span>
 
-              ${item.addressability ? `
-                <span class="badge">${escapeHtml(item.addressability)}</span>
-              ` : ""}
+              <span class="badge">
+                ${escapeHtml(item.addressability)}
+              </span>
             </div>
           </div>
 
@@ -1649,7 +1914,7 @@
           ${(item.nips || []).map(nip => `
             <a
               class="button"
-              href="${NIP_URLS[nip] || "#"}"
+              href="${escapeHtml(nipUrl(nip))}"
               target="_blank"
               rel="noopener"
             >View ${escapeHtml(nip)} ↗</a>
@@ -1895,13 +2160,7 @@
         const name = Array.isArray(tag) ? tag[0] : "";
         const value = Array.isArray(tag) ? tag.slice(1).join(" · ") : "";
 
-        const explanation = item?.fields?.[name] || ({
-          e: "References another event.",
-          p: "References another public key.",
-          a: "References an addressable or replaceable event.",
-          t: "A topic or hashtag.",
-          k: "The kind number of the referenced event."
-        }[name] || "This tag is not described by the loaded metadata.");
+        const explanation = item?.fields?.[name] || tagExplanation(name);
 
         return `
           <div class="tag-chip">
@@ -1916,256 +2175,26 @@
     }
 
     function loadExampleEvent() {
-      eventInput.value = JSON.stringify(exampleEvent(getKind(1)), null, 2);
-      explainEvent();
-    }
+      const item = getKind(1) || KIND_DATA[0];
 
-    function normalizeInput(value) {
-      return String(value || "").trim();
+      eventInput.value = JSON.stringify(exampleEvent(item), null, 2);
+      explainEvent();
     }
 
     function isHexEventId(value) {
       return /^[a-fA-F0-9]{64}$/.test(value);
     }
 
-    function isBech32Charset(value) {
-      return /^[a-z0-9]+$/i.test(value);
-    }
-
-    function base64urlToBytes(value) {
-      const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
-      const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
-      const binary = atob(padded);
-
-      return Uint8Array.from(binary, char => char.charCodeAt(0));
-    }
-
-    function bytesToHex(bytes) {
-      return Array.from(bytes)
-        .map(byte => byte.toString(16).padStart(2, "0"))
-        .join("");
-    }
-
-    const BECH32_ALPHABET =
-      "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
-
-    function bech32Polymod(values) {
-      const generator = [
-        0x3b6a57b2,
-        0x26508e6d,
-        0x1ea119fa,
-        0x3d4233dd,
-        0x2a1462b3
-      ];
-
-      let chk = 1;
-
-      for (const value of values) {
-        const top = chk >>> 25;
-        chk = ((chk & 0x1ffffff) << 5) ^ value;
-
-        for (let bit = 0; bit < 5; bit++) {
-          if ((top >>> bit) & 1) {
-            chk ^= generator[bit];
-          }
-        }
-      }
-
-      return chk >>> 0;
-    }
-
-    function bech32HrpExpand(hrp) {
-      const high = [];
-      const low = [];
-
-      for (const char of hrp) {
-        high.push(char.charCodeAt(0) >> 5);
-      }
-
-      high.push(0);
-
-      for (const char of hrp) {
-        low.push(char.charCodeAt(0) & 31);
-      }
-
-      return high.concat(low);
-    }
-
-    function convertBits(data, fromBits, toBits, pad = true) {
-      let accumulator = 0;
-      let bits = 0;
-      const result = [];
-      const maxValue = (1 << toBits) - 1;
-      const maxAccumulator = (1 << (fromBits + toBits - 1)) - 1;
-
-      for (const value of data) {
-        if (value < 0 || value >> fromBits !== 0) return null;
-
-        accumulator = ((accumulator << fromBits) | value) & maxAccumulator;
-        bits += fromBits;
-
-        while (bits >= toBits) {
-          bits -= toBits;
-          result.push((accumulator >> bits) & maxValue);
-        }
-      }
-
-      if (pad) {
-        if (bits) result.push((accumulator << (toBits - bits)) & maxValue);
-      } else {
-        if (bits >= fromBits) return null;
-        if (((accumulator << (toBits - bits)) & maxValue) !== 0) return null;
-      }
-
-      return result;
-    }
-
-    function decodeBech32(value) {
-      let input = normalizeInput(value).toLowerCase();
-
-      if (input.startsWith("nostr:")) {
-        input = input.slice(6);
-      }
-
-      const separator = input.lastIndexOf("1");
-
-      if (separator < 1 || separator + 7 > input.length) {
-        throw new Error("Invalid bech32 identifier.");
-      }
-
-      const hrp = input.slice(0, separator);
-      const dataPart = input.slice(separator + 1);
-
-      if (!isBech32Charset(dataPart)) {
-        throw new Error("Invalid bech32 characters.");
-      }
-
-      const data = [];
-
-      for (const char of dataPart) {
-        const index = BECH32_ALPHABET.indexOf(char);
-
-        if (index === -1) {
-          throw new Error("Invalid bech32 character.");
-        }
-
-        data.push(index);
-      }
-
-      const checksum = data.slice(-6);
-      const payload = data.slice(0, -6);
-      const verify = bech32Polymod(
-        bech32HrpExpand(hrp).concat(data)
-      );
-
-      if (verify !== 1) {
-        throw new Error("Invalid bech32 checksum.");
-      }
-
-      return {
-        hrp,
-        words: payload,
-        bytes: convertBits(payload, 5, 8, false)
-      };
-    }
-
-    function parseNip19(value) {
-      const decoded = decodeBech32(value);
-
-      if (!decoded.bytes) {
-        throw new Error("Unable to decode identifier payload.");
-      }
-
-      if (decoded.hrp === "note") {
-        if (decoded.bytes.length !== 32) {
-          throw new Error("A note identifier must contain 32 bytes.");
-        }
-
-        return {
-          type: "note",
-          id: bytesToHex(decoded.bytes),
-          source: "NIP-19 note identifier"
-        };
-      }
-
-      if (decoded.hrp === "nevent") {
-        return parseNeventTLV(decoded.bytes);
-      }
-
-      throw new Error(
-        `Unsupported NIP-19 identifier: ${decoded.hrp}`
-      );
-    }
-
-    function parseNeventTLV(bytes) {
-      const fields = [];
-      let offset = 0;
-
-      while (offset < bytes.length) {
-        if (offset + 2 > bytes.length) {
-          throw new Error("Malformed nevent data.");
-        }
-
-        const type = bytes[offset];
-        const length = bytes[offset + 1];
-        offset += 2;
-
-        if (offset + length > bytes.length) {
-          throw new Error("Malformed nevent field length.");
-        }
-
-        fields.push({
-          type,
-          value: bytes.slice(offset, offset + length)
-        });
-
-        offset += length;
-      }
-
-      const idField = fields.find(field => field.type === 0);
-
-      if (!idField || idField.value.length !== 32) {
-        throw new Error("The nevent identifier has no valid event ID.");
-      }
-
-      const relayHints = fields
-        .filter(field => field.type === 1)
-        .map(field => new TextDecoder().decode(field.value));
-
-      const authorField = fields.find(field => field.type === 2);
-      const kindField = fields.find(field => field.type === 3);
-
-      let kind;
-
-      if (kindField && kindField.value.length === 4) {
-        kind = (
-          (kindField.value[0] << 24) |
-          (kindField.value[1] << 16) |
-          (kindField.value[2] << 8) |
-          kindField.value[3]
-        ) >>> 0;
-      }
-
-      return {
-        type: "nevent",
-        id: bytesToHex(idField.value),
-        relays: relayHints,
-        author: authorField ? bytesToHex(authorField.value) : null,
-        kind: Number.isInteger(kind) ? kind : null,
-        source: "NIP-19 nevent identifier"
-      };
-    }
-
     function extractFromUrl(value) {
-      let decodedUrl;
+      let decoded;
 
       try {
-        decodedUrl = decodeURIComponent(value);
+        decoded = decodeURIComponent(value);
       } catch {
-        decodedUrl = value;
+        decoded = value;
       }
 
-      const bchMatch = decodedUrl.match(
+      const bchMatch = decoded.match(
         /bchnostr\.com\/note\/([a-fA-F0-9]{64})(?:[/?#].*)?$/i
       );
 
@@ -2176,7 +2205,7 @@
         };
       }
 
-      const genericMatch = decodedUrl.match(
+      const genericMatch = decoded.match(
         /\/note\/([a-fA-F0-9]{64})(?:[/?#].*)?$/i
       );
 
@@ -2191,7 +2220,7 @@
     }
 
     function extractEventId(input) {
-      const value = normalizeInput(input);
+      const value = String(input || "").trim();
 
       if (!value) {
         return {
@@ -2220,14 +2249,6 @@
           };
         }
 
-        if (Number.isInteger(parsedJson.kind)) {
-          return {
-            event: parsedJson,
-            source: "event JSON",
-            error: "This event has a kind, but no valid 64-character hexadecimal id."
-          };
-        }
-
         return {
           error: "This JSON object does not contain a valid event id."
         };
@@ -2244,24 +2265,9 @@
 
       if (urlResult) return urlResult;
 
-      const normalized = value.startsWith("nostr:")
-        ? value.slice(6)
-        : value;
-
-      if (/^(note|nevent)1/i.test(normalized)) {
-        try {
-          return parseNip19(normalized);
-        } catch (error) {
-          return {
-            encoded: normalized,
-            error: error.message
-          };
-        }
-      }
-
       return {
         error:
-          "No supported event ID found. Try a BCH Nostr note link, a 64-character hexadecimal ID, note1, nevent1, or event JSON."
+          "No supported event ID found. Try a BCH Nostr note link or a 64-character hexadecimal event ID."
       };
     }
 
@@ -2272,44 +2278,12 @@
 
       if (!result.id) {
         linkMessage.textContent = result.error || "No event ID found.";
-
-        if (result.encoded) {
-          linkResult.innerHTML = `
-            <section class="detail-section">
-              <h3>Detected identifier</h3>
-
-              <code class="extracted-id">
-                ${escapeHtml(result.encoded)}
-              </code>
-
-              <p class="hint">
-                ${escapeHtml(result.error)}
-              </p>
-            </section>
-          `;
-
-          linkResult.classList.add("visible");
-        }
-
         return;
       }
 
       const eventKind = result.event && Number.isInteger(result.event.kind)
         ? getKind(result.event.kind)
         : null;
-
-      const relayHints = result.relays?.length
-        ? `
-          <section class="detail-section">
-            <h3>Relay hints</h3>
-            <div class="tag-list">
-              ${result.relays.map(relay => `
-                <div class="tag-chip">${escapeHtml(relay)}</div>
-              `).join("")}
-            </div>
-          </section>
-        `
-        : "";
 
       linkResult.innerHTML = `
         <section class="detail-section">
@@ -2351,17 +2325,15 @@
             `
             : `
               <section class="detail-section">
-                <h3>Next step</h3>
+                <h3>Identifier found</h3>
 
                 <p class="beginner-copy">
-                  The identifier was extracted successfully. The link identifies an event,
-                  but loading its full event JSON requires querying a relay.
+                  The ID was extracted successfully. The complete event can be loaded
+                  from the default BCH Nostr relay below.
                 </p>
               </section>
             `
         }
-
-        ${relayHints}
 
         <section class="detail-section">
           <h3>Fetch from relay</h3>
@@ -2370,14 +2342,16 @@
             <input
               id="relayUrl"
               class="relay-input"
-              value="${escapeHtml(result.relays?.[0] || "wss://relay.damus.io")}"
+              value="${escapeHtml(DEFAULT_RELAY)}"
               placeholder="wss://relay.example"
               aria-label="Relay WebSocket URL"
             >
 
-            <button id="fetchFromRelay" class="button success" type="button">
-              Fetch event
-            </button>
+            <button
+              id="fetchFromRelay"
+              class="button success"
+              type="button"
+            >Fetch event</button>
           </div>
 
           <div id="relayMessage" class="inspector-message"></div>
@@ -2412,21 +2386,32 @@
 
     function fetchEventFromRelay(eventId, relayUrl) {
       const relayMessage = document.getElementById("relayMessage");
+      const cleanRelayUrl = String(relayUrl || "").trim();
+
+      if (!/^wss?:\/\//i.test(cleanRelayUrl)) {
+        relayMessage.textContent =
+          "Use a WebSocket relay URL beginning with wss:// or ws://.";
+        return;
+      }
+
       relayMessage.textContent = "Connecting to relay…";
 
       let socket;
 
       try {
-        socket = new WebSocket(relayUrl.trim());
+        socket = new WebSocket(cleanRelayUrl);
       } catch {
-        relayMessage.textContent = "That relay URL is not a valid WebSocket URL.";
+        relayMessage.textContent =
+          "That relay URL is not a valid WebSocket URL.";
         return;
       }
 
       const requestId = `atlas-${Date.now()}`;
+      let received = false;
 
       const timeout = setTimeout(() => {
-        relayMessage.textContent = "The relay did not respond in time.";
+        relayMessage.textContent =
+          "The relay did not respond in time.";
         socket.close();
       }, 10000);
 
@@ -2451,17 +2436,19 @@
         }
 
         if (message[0] === "EVENT" && message[2]) {
+          received = true;
           clearTimeout(timeout);
 
           const receivedEvent = message[2];
 
           relayMessage.textContent =
-            "Event received from the selected relay.";
+            `Event received from ${cleanRelayUrl}.`;
 
           eventInput.value = JSON.stringify(receivedEvent, null, 2);
+
           showExtractedEvent({
             id: receivedEvent.id || eventId,
-            source: `relay ${relayUrl}`,
+            source: `relay ${cleanRelayUrl}`,
             event: receivedEvent
           });
 
@@ -2469,23 +2456,31 @@
           socket.close();
         }
 
-        if (message[0] === "EOSE") {
+        if (message[0] === "EOSE" && !received) {
           clearTimeout(timeout);
 
-          if (!message[2]) {
-            relayMessage.textContent =
-              "The relay returned no event for this ID.";
-          }
+          relayMessage.textContent =
+            "The relay returned no event for this ID.";
+
+          socket.send(JSON.stringify(["CLOSE", requestId]));
+          socket.close();
         }
 
         if (message[0] === "NOTICE") {
           relayMessage.textContent =
             `Relay notice: ${message[1] || "request rejected"}`;
         }
+
+        if (message[0] === "CLOSED") {
+          clearTimeout(timeout);
+          relayMessage.textContent =
+            `Relay closed the request: ${message[2] || "unknown reason"}`;
+        }
       });
 
       socket.addEventListener("error", () => {
         clearTimeout(timeout);
+
         relayMessage.textContent =
           "Could not connect to that relay. It may be unavailable or blocked by the browser.";
       });
@@ -2495,6 +2490,25 @@
       });
     }
 
+    function showOverlay(overlay) {
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("locked");
+    }
+
+    function hideOverlay(overlay) {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+
+      if (
+        !detailOverlay.classList.contains("open") &&
+        !inspectorOverlay.classList.contains("open") &&
+        !linkOverlay.classList.contains("open")
+      ) {
+        document.body.classList.remove("locked");
+      }
+    }
+
     function closeOpenLayer() {
       if (inspectorOverlay.classList.contains("open")) {
         closeInspector();
@@ -2502,6 +2516,14 @@
         closeLinkExtractor();
       } else if (detailOverlay.classList.contains("open")) {
         closeDetail();
+      }
+    }
+
+    function openInitialKind() {
+      const match = window.location.hash.match(/^#kind\/(\d+)$/);
+
+      if (match) {
+        openKind(Number(match[1]), false);
       }
     }
 
@@ -2578,42 +2600,25 @@
       }
     });
 
-    window.addEventListener("popstate", () => {
-      const match = window.location.hash.match(/^#kind\/(\d+)$/);
-
-      if (match) {
-        openKind(Number(match[1]), false);
-      } else if (detailOverlay.classList.contains("open")) {
-        closeDetail();
-      }
-    });
-
-    window.addEventListener("hashchange", () => {
-      const match = window.location.hash.match(/^#kind\/(\d+)$/);
-
-      if (match) {
-        openKind(Number(match[1]), false);
-      }
-    });
+    window.addEventListener("popstate", openInitialKind);
+    window.addEventListener("hashchange", openInitialKind);
 
     setInterval(() => {
-      placeholderIndex = (placeholderIndex + 1) % searchExamples.length;
+      placeholderIndex =
+        (placeholderIndex + 1) % searchExamples.length;
 
       if (
         document.activeElement !== search &&
         !search.value
       ) {
-        search.placeholder = `Try “${searchExamples[placeholderIndex]}”`;
+        search.placeholder =
+          `Try “${searchExamples[placeholderIndex]}”`;
       }
     }, 3000);
 
+    KIND_DATA = fallbackKinds();
     renderUniverse();
-
-    const initialKind = window.location.hash.match(/^#kind\/(\d+)$/);
-
-    if (initialKind) {
-      openKind(Number(initialKind[1]), false);
-    }
+    loadKinds();
   </script>
 </body>
 </html>
