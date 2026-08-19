@@ -3,27 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090a0f">
-  <title>Nostr Atlas</title>
+  <meta name="theme-color" content="#080a12">
+  <title>Nostr Atlas — Cyberpunk Event Topology</title>
 
   <style>
     :root {
-      --bg: #090a0f;
-      --panel: #11131b;
-      --panel-2: #171a25;
-      --line: rgba(255,255,255,.1);
-      --line-strong: rgba(255,255,255,.19);
-      --text: #f5f3f8;
-      --soft: #cbc8d4;
-      --muted: #9795a4;
-      --faint: #686673;
-      --accent: #ff825c;
-      --accent-soft: #ffb099;
-      --violet: #b894ff;
+      --bg: #080a12;
+      --panel: #101522;
+      --panel-2: #151c2d;
+      --line: rgba(255,255,255,.12);
+      --line-strong: rgba(255,255,255,.24);
+      --text: #f5f5ff;
+      --muted: #9da4bb;
+      --faint: #656c83;
+      --cyan: #5cd9ff;
+      --purple: #b894ff;
+      --pink: #ff5ca8;
+      --orange: #ff825c;
       --green: #78d6a6;
       --yellow: #f2c96d;
       --danger: #f28191;
-      --shadow: 0 24px 90px rgba(0,0,0,.46);
+      --shadow: 0 30px 100px rgba(0,0,0,.55);
     }
 
     * {
@@ -38,12 +38,11 @@
       margin: 0;
       min-width: 320px;
       background:
-        radial-gradient(circle at 50% -15%, rgba(184,148,255,.14), transparent 35rem),
-        radial-gradient(circle at 100% 30%, rgba(255,130,92,.06), transparent 28rem),
+        radial-gradient(circle at 50% -10%, rgba(184,148,255,.18), transparent 34rem),
+        radial-gradient(circle at 100% 25%, rgba(92,217,255,.08), transparent 28rem),
         var(--bg);
       color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.5;
     }
 
@@ -65,22 +64,10 @@
       color: inherit;
     }
 
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
     .app {
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 38px 0 78px;
+      padding: 34px 0 70px;
     }
 
     .topbar {
@@ -88,28 +75,29 @@
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      margin-bottom: 76px;
+      margin-bottom: 70px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 11px;
+      gap: 12px;
+      color: var(--text);
       font-size: 12px;
-      font-weight: 850;
-      letter-spacing: .16em;
+      font-weight: 900;
+      letter-spacing: .18em;
     }
 
     .brand-mark {
       display: grid;
       place-items: center;
-      width: 28px;
-      height: 28px;
-      border: 1px solid var(--line-strong);
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--cyan);
       border-radius: 9px;
-      color: var(--accent);
-      font-size: 15px;
+      color: var(--cyan);
       transform: rotate(45deg);
+      box-shadow: 0 0 20px rgba(92,217,255,.25);
     }
 
     .brand-mark span {
@@ -120,14 +108,14 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      color: var(--muted);
+      font-size: 11px;
     }
 
     .source-status {
       display: flex;
       align-items: center;
-      gap: 6px;
-      color: var(--muted);
-      font-size: 11px;
+      gap: 7px;
     }
 
     .source-dot {
@@ -135,55 +123,49 @@
       height: 7px;
       border-radius: 50%;
       background: var(--yellow);
-      box-shadow: 0 0 10px rgba(242,201,109,.7);
+      box-shadow: 0 0 12px rgba(242,201,109,.8);
     }
 
     .source-dot.live {
       background: var(--green);
-      box-shadow: 0 0 10px rgba(120,214,166,.7);
-    }
-
-    .source-dot.fallback {
-      background: var(--yellow);
-      box-shadow: 0 0 10px rgba(242,201,109,.7);
+      box-shadow: 0 0 12px rgba(120,214,166,.8);
     }
 
     .source-link {
       color: var(--muted);
-      font-size: 12px;
       text-decoration: none;
-      transition: color .2s ease;
     }
 
-    .source-link:hover,
-    .source-link:focus-visible {
+    .source-link:hover {
       color: var(--text);
     }
 
     .hero {
-      max-width: 780px;
-      margin: 0 auto 54px;
+      max-width: 820px;
+      margin: 0 auto 50px;
       text-align: center;
     }
 
     .eyebrow {
-      margin: 0 0 17px;
-      color: var(--accent);
+      margin: 0 0 15px;
+      color: var(--cyan);
       font-size: 11px;
-      font-weight: 850;
+      font-weight: 900;
       letter-spacing: .22em;
       text-transform: uppercase;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(43px, 7vw, 79px);
-      line-height: .96;
-      letter-spacing: -.075em;
+      font-size: clamp(42px, 8vw, 82px);
+      line-height: .95;
+      letter-spacing: -.08em;
+      text-shadow: 0 0 40px rgba(92,217,255,.12);
     }
 
     .tagline {
-      margin: 20px auto 31px;
+      margin: 20px auto 30px;
+      max-width: 620px;
       color: var(--muted);
       font-size: clamp(16px, 2.5vw, 20px);
     }
@@ -192,46 +174,48 @@
       position: relative;
       display: flex;
       align-items: center;
-      max-width: 700px;
+      max-width: 720px;
       margin: 0 auto;
     }
 
     .search-icon {
       position: absolute;
       left: 20px;
+      z-index: 1;
       color: var(--muted);
-      font-size: 19px;
       pointer-events: none;
     }
 
-    #search {
+    .search {
       width: 100%;
-      height: 61px;
-      padding: 0 52px;
+      height: 60px;
+      padding: 0 50px;
       border: 1px solid var(--line-strong);
       border-radius: 17px;
       outline: none;
-      background: rgba(17,19,27,.86);
+      background: rgba(16,21,34,.9);
       color: var(--text);
-      box-shadow: 0 12px 45px rgba(0,0,0,.22);
-      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow: 0 15px 50px rgba(0,0,0,.28);
     }
 
-    #search::placeholder {
-      color: #777583;
+    .search:focus,
+    .inspector-input:focus,
+    .relay-input:focus {
+      border-color: rgba(92,217,255,.8);
+      box-shadow: 0 0 0 4px rgba(92,217,255,.1), 0 18px 60px rgba(0,0,0,.3);
     }
 
-    #search:focus {
-      border-color: rgba(184,148,255,.76);
-      background: var(--panel-2);
-      box-shadow: 0 0 0 4px rgba(184,148,255,.09), 0 18px 52px rgba(0,0,0,.3);
+    .search::placeholder,
+    .inspector-input::placeholder,
+    .relay-input::placeholder {
+      color: #6f778d;
     }
 
     .clear-search {
       position: absolute;
-      right: 14px;
-      width: 31px;
-      height: 31px;
+      right: 13px;
+      width: 32px;
+      height: 32px;
       border: 0;
       border-radius: 50%;
       background: transparent;
@@ -250,40 +234,39 @@
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-top: 16px;
       flex-wrap: wrap;
+      margin-top: 16px;
     }
 
     .button {
-      min-height: 39px;
+      min-height: 40px;
       padding: 0 15px;
       border: 1px solid var(--line-strong);
       border-radius: 10px;
-      background: rgba(255,255,255,.035);
-      color: var(--soft);
+      background: rgba(255,255,255,.04);
+      color: var(--soft, #d8d9e8);
       font-size: 12px;
-      font-weight: 750;
-      text-decoration: none;
-      transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+      font-weight: 800;
+      transition: .2s ease;
     }
 
     .button:hover,
     .button:focus-visible {
-      border-color: rgba(184,148,255,.6);
-      background: rgba(184,148,255,.12);
+      border-color: var(--cyan);
+      background: rgba(92,217,255,.1);
       color: var(--text);
       outline: none;
       transform: translateY(-1px);
     }
 
     .button.primary {
-      border-color: rgba(255,130,92,.5);
+      border-color: rgba(255,130,92,.55);
       background: rgba(255,130,92,.12);
-      color: var(--accent-soft);
+      color: #ffb099;
     }
 
     .button.success {
-      border-color: rgba(120,214,166,.4);
+      border-color: rgba(120,214,166,.5);
       background: rgba(120,214,166,.1);
       color: var(--green);
     }
@@ -304,8 +287,8 @@
 
     .universe-head h2 {
       margin: 0;
-      font-size: 21px;
-      letter-spacing: -.035em;
+      font-size: 22px;
+      letter-spacing: -.04em;
     }
 
     .universe-head p {
@@ -321,7 +304,7 @@
     }
 
     .category {
-      margin: 0 0 31px;
+      margin-bottom: 31px;
     }
 
     .category-heading {
@@ -329,9 +312,9 @@
       align-items: center;
       gap: 10px;
       margin: 0 0 12px;
-      color: #aaa8b5;
+      color: #aaaec0;
       font-size: 10px;
-      font-weight: 850;
+      font-weight: 900;
       letter-spacing: .18em;
       text-transform: uppercase;
     }
@@ -356,10 +339,10 @@
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 15px;
-      background: linear-gradient(145deg, rgba(22,25,37,.92), rgba(13,15,22,.94));
+      background: linear-gradient(145deg, rgba(22,28,43,.95), rgba(10,13,22,.95));
       color: var(--text);
       text-align: left;
-      transition: border-color .22s ease, transform .22s ease, background .22s ease, box-shadow .22s ease;
+      transition: .22s ease;
     }
 
     .kind-card::after {
@@ -367,19 +350,19 @@
       position: absolute;
       right: -35px;
       bottom: -45px;
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      background: rgba(184,148,255,.07);
-      filter: blur(14px);
+      background: rgba(92,217,255,.08);
+      filter: blur(16px);
       pointer-events: none;
     }
 
     .kind-card:hover,
     .kind-card:focus-visible {
-      border-color: rgba(184,148,255,.55);
-      background: linear-gradient(145deg, rgba(32,30,50,.96), rgba(15,17,26,.96));
-      box-shadow: 0 15px 35px rgba(0,0,0,.22);
+      border-color: rgba(92,217,255,.65);
+      background: linear-gradient(145deg, rgba(28,40,63,.98), rgba(12,17,29,.98));
+      box-shadow: 0 18px 40px rgba(0,0,0,.3), 0 0 24px rgba(92,217,255,.08);
       outline: none;
       transform: translateY(-3px);
     }
@@ -387,18 +370,17 @@
     .kind-number {
       display: block;
       margin-bottom: 15px;
-      color: var(--accent);
-      font-family: "SFMono-Regular", Consolas, monospace;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       font-size: 13px;
-      font-weight: 750;
+      font-weight: 800;
     }
 
     .kind-name {
       display: block;
       margin-bottom: 5px;
       font-size: 15px;
-      font-weight: 800;
-      letter-spacing: -.02em;
+      font-weight: 850;
     }
 
     .kind-description {
@@ -413,7 +395,7 @@
       top: 17px;
       right: 15px;
       color: var(--muted);
-      font-family: "SFMono-Regular", Consolas, monospace;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       font-size: 10px;
     }
 
@@ -432,15 +414,23 @@
       color: var(--text);
     }
 
+    .footer {
+      margin-top: 64px;
+      color: #646c83;
+      font-size: 11px;
+      text-align: center;
+    }
+
     .overlay {
       position: fixed;
       inset: 0;
-      z-index: 10;
+      z-index: 20;
       display: none;
       align-items: flex-end;
       justify-content: center;
-      background: rgba(3,4,8,.74);
-      backdrop-filter: blur(9px);
+      padding: 20px;
+      background: rgba(2,4,10,.82);
+      backdrop-filter: blur(10px);
     }
 
     .overlay.open {
@@ -448,15 +438,14 @@
     }
 
     .sheet {
-      width: min(800px, 100%);
-      max-height: min(91vh, 900px);
+      width: min(850px, 100%);
+      max-height: 91vh;
       overflow-y: auto;
       padding: 30px;
       border: 1px solid var(--line-strong);
-      border-bottom: 0;
-      border-radius: 25px 25px 0 0;
+      border-radius: 25px;
       background:
-        radial-gradient(circle at 90% 0, rgba(184,148,255,.12), transparent 22rem),
+        radial-gradient(circle at 90% 0, rgba(184,148,255,.14), transparent 25rem),
         var(--panel);
       box-shadow: var(--shadow);
       animation: sheet-in .24s ease both;
@@ -465,9 +454,8 @@
     @keyframes sheet-in {
       from {
         opacity: 0;
-        transform: translateY(25px);
+        transform: translateY(24px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
@@ -483,74 +471,36 @@
 
     .sheet-label {
       margin: 0 0 7px;
-      color: var(--accent);
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 12px;
-      font-weight: 850;
-      letter-spacing: .12em;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .14em;
     }
 
     .sheet h2 {
       margin: 0;
-      font-size: clamp(27px, 5vw, 39px);
+      font-size: clamp(28px, 5vw, 42px);
       line-height: 1;
       letter-spacing: -.06em;
     }
 
     .close {
       flex: 0 0 auto;
-      width: 37px;
-      height: 37px;
+      width: 38px;
+      height: 38px;
       border: 1px solid var(--line);
       border-radius: 10px;
       background: transparent;
-      color: var(--soft);
+      color: var(--muted);
       font-size: 20px;
     }
 
     .close:hover,
     .close:focus-visible {
-      border-color: var(--line-strong);
-      background: rgba(255,255,255,.06);
+      border-color: var(--cyan);
+      color: var(--text);
       outline: none;
-    }
-
-    .badges {
-      display: flex;
-      gap: 7px;
-      margin-top: 13px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      padding: 4px 8px;
-      border: 1px solid var(--line-strong);
-      border-radius: 6px;
-      color: var(--soft);
-      font-size: 10px;
-      font-weight: 850;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    .badge.accent {
-      border-color: rgba(255,130,92,.4);
-      color: var(--accent-soft);
-    }
-
-    .badge.green {
-      border-color: rgba(120,214,166,.36);
-      color: var(--green);
-    }
-
-    .badge.yellow {
-      border-color: rgba(242,201,109,.38);
-      color: var(--yellow);
-    }
-
-    .badge.danger {
-      border-color: rgba(242,129,145,.38);
-      color: var(--danger);
     }
 
     .detail-section {
@@ -567,141 +517,9 @@
 
     .beginner-copy {
       margin: 0;
-      color: var(--soft);
+      color: #d2d6e7;
       font-size: 15px;
       line-height: 1.65;
-    }
-
-    .dna {
-      display: flex;
-      align-items: center;
-      min-height: 66px;
-      gap: 7px;
-      padding: 13px;
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(0,0,0,.15);
-    }
-
-    .dna-node {
-      padding: 8px 10px;
-      border: 1px solid rgba(184,148,255,.3);
-      border-radius: 8px;
-      background: rgba(184,148,255,.08);
-      color: #ddd0ff;
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 11px;
-      white-space: nowrap;
-    }
-
-    .dna-arrow {
-      color: var(--muted);
-      font-size: 16px;
-    }
-
-    .tag-list,
-    .related-list {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .tag-chip,
-    .related-chip {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(255,255,255,.035);
-      color: var(--soft);
-      font-size: 12px;
-    }
-
-    .tag-chip {
-      padding: 9px 11px;
-    }
-
-    .tag-chip strong {
-      margin-right: 5px;
-      color: var(--accent);
-      font-family: monospace;
-    }
-
-    .related-chip {
-      padding: 8px 11px;
-      transition: border-color .2s ease, background .2s ease;
-    }
-
-    .related-chip:hover,
-    .related-chip:focus-visible {
-      border-color: rgba(184,148,255,.55);
-      background: rgba(184,148,255,.1);
-      outline: none;
-    }
-
-    pre {
-      max-height: 290px;
-      margin: 0;
-      padding: 17px;
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: #0a0b10;
-      color: #c9c5d2;
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 11px;
-      line-height: 1.65;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    code.extracted-id {
-      display: block;
-      padding: 15px;
-      overflow-wrap: anywhere;
-      border: 1px solid rgba(120,214,166,.3);
-      border-radius: 12px;
-      background: rgba(120,214,166,.07);
-      color: var(--green);
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 12px;
-      line-height: 1.55;
-    }
-
-    .extracted-kind {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 15px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255,255,255,.025);
-    }
-
-    .extracted-kind strong,
-    .extracted-kind span {
-      display: block;
-    }
-
-    .extracted-kind strong {
-      color: var(--text);
-      font-size: 15px;
-    }
-
-    .extracted-kind span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .sheet-actions {
-      display: flex;
-      gap: 9px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .inspector-sheet {
-      width: min(850px, 100%);
     }
 
     .inspector-input {
@@ -712,22 +530,44 @@
       border: 1px solid var(--line-strong);
       border-radius: 12px;
       outline: none;
-      background: #0a0b10;
-      color: var(--soft);
-      font-family: "SFMono-Regular", Consolas, monospace;
+      background: #090d17;
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       font-size: 12px;
       line-height: 1.55;
     }
 
-    input.inspector-input {
+    .single-input {
       min-height: 0;
       height: 52px;
       resize: none;
     }
 
-    .inspector-input:focus {
-      border-color: rgba(184,148,255,.72);
-      box-shadow: 0 0 0 4px rgba(184,148,255,.08);
+    .relay-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      outline: none;
+      background: #090d17;
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .sheet-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .inspector-message {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--danger);
+      font-size: 12px;
     }
 
     .inspector-result {
@@ -739,13 +579,6 @@
       display: block;
     }
 
-    .inspector-message {
-      min-height: 18px;
-      margin-top: 12px;
-      color: var(--danger);
-      font-size: 12px;
-    }
-
     .field-tree {
       display: grid;
       gap: 8px;
@@ -753,7 +586,7 @@
 
     .field {
       display: grid;
-      grid-template-columns: 125px 1fr;
+      grid-template-columns: 130px 1fr;
       gap: 14px;
       padding: 12px;
       border: 1px solid var(--line);
@@ -762,58 +595,308 @@
     }
 
     .field-name {
-      color: var(--accent);
-      font-family: monospace;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       font-size: 12px;
       font-weight: 850;
     }
 
     .field-explanation {
-      color: var(--soft);
+      color: #d3d7e7;
       font-size: 12px;
+      word-break: break-word;
     }
 
-    .relay-box {
-      display: grid;
-      gap: 9px;
-      grid-template-columns: 1fr auto;
-    }
-
-    .relay-input {
-      width: 100%;
-      height: 42px;
-      padding: 0 12px;
-      border: 1px solid var(--line-strong);
-      border-radius: 9px;
-      outline: none;
-      background: #0a0b10;
-      color: var(--soft);
-      font-family: monospace;
-      font-size: 12px;
-    }
-
-    .relay-input:focus {
-      border-color: rgba(184,148,255,.72);
-      box-shadow: 0 0 0 4px rgba(184,148,255,.08);
-    }
-
-    .footer {
-      margin-top: 64px;
-      color: #64626e;
+    pre {
+      max-height: 300px;
+      margin: 0;
+      padding: 17px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #080b13;
+      color: #c8d2eb;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       font-size: 11px;
-      text-align: center;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Topology */
+
+    .topology-sheet {
+      width: min(1220px, 100%);
+      max-height: 95vh;
+      border-color: rgba(92,217,255,.35);
+      background:
+        linear-gradient(rgba(92,217,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(92,217,255,.025) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0, rgba(92,217,255,.12), transparent 35rem),
+        #090d18;
+      background-size: 28px 28px, 28px 28px, auto;
+    }
+
+    .topology-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(220px, .8fr) auto;
+      align-items: end;
+      gap: 10px;
+    }
+
+    .topology-controls label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .topology-controls .inspector-input {
+      min-height: 44px;
+      height: 44px;
+      resize: none;
+    }
+
+    .topology-controls .button {
+      height: 44px;
+      white-space: nowrap;
+    }
+
+    .topology-stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 20px 0 13px;
+    }
+
+    .stat {
+      min-width: 110px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.035);
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--cyan);
+      font-size: 18px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .topology-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 260px;
+      gap: 12px;
+    }
+
+    .topology-graph {
+      position: relative;
+      min-height: 610px;
+      overflow: hidden;
+      border: 1px solid rgba(92,217,255,.25);
+      border-radius: 17px;
+      background:
+        radial-gradient(circle at center, rgba(92,217,255,.07), transparent 30%),
+        rgba(3,7,15,.8);
+      box-shadow: inset 0 0 50px rgba(92,217,255,.04);
+    }
+
+    .topology-graph::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent 49.8%, rgba(92,217,255,.08) 50%, transparent 50.2%),
+        linear-gradient(0deg, transparent 49.8%, rgba(92,217,255,.08) 50%, transparent 50.2%);
+    }
+
+    .topology-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .topology-edge {
+      fill: none;
+      stroke-width: 1.4;
+      opacity: .82;
+      filter: url(#topologyGlow);
+      stroke-dasharray: 7 5;
+      animation: dash-flow 4s linear infinite;
+    }
+
+    @keyframes dash-flow {
+      to {
+        stroke-dashoffset: -48;
+      }
+    }
+
+    .topology-node {
+      cursor: pointer;
+    }
+
+    .topology-node circle {
+      transition: .2s ease;
+    }
+
+    .topology-node:hover circle,
+    .topology-node.selected circle {
+      filter: url(#topologyGlow);
+      stroke-width: 3;
+    }
+
+    .node-image {
+      pointer-events: none;
+    }
+
+    .node-name {
+      fill: var(--text);
+      font-size: 11px;
+      font-weight: 800;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .node-activity {
+      fill: var(--muted);
+      font-size: 9px;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .topology-details {
+      min-height: 300px;
+      padding: 17px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.035);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .profile-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .profile-head {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .profile-avatar {
+      width: 54px;
+      height: 54px;
+      border: 2px solid var(--cyan);
+      border-radius: 50%;
+      object-fit: cover;
+      background: #111827;
+      box-shadow: 0 0 20px rgba(92,217,255,.2);
+    }
+
+    .profile-name {
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    .profile-key {
+      color: var(--faint);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 10px;
+      word-break: break-all;
+    }
+
+    .profile-about {
+      color: #c8cce0;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .activity-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(0,0,0,.15);
+    }
+
+    .activity-kind {
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .activity-date {
+      color: var(--faint);
+      font-size: 10px;
+    }
+
+    .topology-legend {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      box-shadow: 0 0 9px currentColor;
+    }
+
+    .topology-note {
+      margin-top: 12px;
+      color: var(--faint);
+      font-size: 10px;
+      line-height: 1.5;
     }
 
     @media (min-width: 720px) {
       .overlay {
         align-items: center;
-        padding: 20px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topology-controls,
+      .topology-layout {
+        grid-template-columns: 1fr;
       }
 
-      .sheet {
-        max-height: 90vh;
-        border-bottom: 1px solid var(--line-strong);
-        border-radius: 25px;
+      .topology-graph {
+        min-height: 520px;
       }
     }
 
@@ -824,7 +907,7 @@
       }
 
       .topbar {
-        margin-bottom: 58px;
+        margin-bottom: 53px;
       }
 
       .source-link {
@@ -833,10 +916,6 @@
 
       .source-area {
         margin-left: auto;
-      }
-
-      .hero {
-        margin-bottom: 43px;
       }
 
       .kind-grid {
@@ -864,13 +943,8 @@
         gap: 9px;
       }
 
-      .relay-box {
-        grid-template-columns: 1fr;
-      }
-
-      .extracted-kind {
-        align-items: stretch;
-        flex-direction: column;
+      .topology-graph {
+        min-height: 450px;
       }
     }
 
@@ -897,40 +971,38 @@
       <div class="source-area">
         <span class="source-status">
           <span id="sourceDot" class="source-dot"></span>
-          <span id="sourceStatus">Loading kinds…</span>
+          <span id="sourceStatus">Loading kinds</span>
         </span>
-
-        <a
-          class="source-link"
-          href="https://nostrbook.dev/kinds/"
+        <a class="source-link"
+          href="https://nostrbook.dev/kinds"
           target="_blank"
-          rel="noopener"
-        >Kinds source ↗</a>
+          rel="noopener">
+          Kinds source
+        </a>
       </div>
     </header>
 
     <section class="hero" aria-labelledby="page-title">
       <p class="eyebrow">The event universe</p>
       <h1 id="page-title">Nostr Atlas</h1>
-      <p class="tagline">See everything that can happen on Nostr.</p>
+      <p class="tagline">
+        Explore Nostr events and map the public network around a post.
+      </p>
 
       <div class="search-wrap">
         <span class="search-icon" aria-hidden="true">⌕</span>
-
         <input
           id="search"
+          class="search"
           type="search"
           autocomplete="off"
           aria-label="Search Nostr kinds"
-          placeholder="Search a kind, NIP, tag, event or concept..."
-        >
-
+          placeholder="Search a kind, NIP, tag, event or concept...">
         <button
           id="clearSearch"
           class="clear-search"
           type="button"
-          aria-label="Clear search"
-        >×</button>
+          aria-label="Clear search">×</button>
       </div>
 
       <div class="hero-actions">
@@ -941,10 +1013,14 @@
         <button id="openLinkExtractor" class="button" type="button">
           Extract Event ID
         </button>
+
+        <button id="openTopology" class="button success" type="button">
+          Map Post Topology
+        </button>
       </div>
 
       <p class="hint">
-        Try 30023, article, reaction, private message, NIP-17, calendar, or a note link
+        Try 30023, article, reaction, private message, NIP-17, calendar, or a note link.
       </p>
     </section>
 
@@ -954,7 +1030,6 @@
           <h2 id="universe-title">The kind universe</h2>
           <p>Events are the pieces. Kinds tell us what they mean.</p>
         </div>
-
         <span id="resultCount" class="result-count"></span>
       </div>
 
@@ -967,235 +1042,174 @@
     </section>
 
     <p class="footer">
-      Built as a learning map. Protocol references open the original documentation.
+      Public interaction data depends on relay coverage. No private events are inspected.
     </p>
   </main>
 
+  <!-- Kind detail overlay -->
   <div id="detailOverlay" class="overlay" aria-hidden="true">
-    <section
-      id="detailSheet"
+    <section id="detailSheet"
       class="sheet"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="detailTitle"
-    ></section>
+      aria-labelledby="detailTitle"></section>
   </div>
 
+  <!-- Event inspector overlay -->
   <div id="inspectorOverlay" class="overlay" aria-hidden="true">
-    <section
-      class="sheet inspector-sheet"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="inspectorTitle"
-    >
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="inspectorTitle">
       <div class="sheet-top">
         <div>
           <p class="sheet-label">EVENT TRANSLATOR</p>
           <h2 id="inspectorTitle">Explain an event</h2>
         </div>
-
-        <button
-          class="close"
-          type="button"
-          data-close="inspector"
-          aria-label="Close"
-        >×</button>
+        <button class="close" type="button" data-close-inspector aria-label="Close">×</button>
       </div>
 
       <p class="beginner-copy">
-        Paste raw Nostr event JSON and Atlas will break it into the pieces that make it understandable.
+        Paste raw Nostr event JSON and Atlas will break it into understandable pieces.
       </p>
 
       <div class="detail-section">
         <label class="sr-only" for="eventInput">Nostr event JSON</label>
-
         <textarea
           id="eventInput"
           class="inspector-input"
           spellcheck="false"
-          placeholder='{"kind":1,"content":"Hello Nostr!","pubkey":"...","created_at":0,"tags":[],"id":"...","sig":"..."}'
-        ></textarea>
-
-        <div class="sheet-actions">
-          <button id="explainEvent" class="button primary" type="button">
-            Explain event
-          </button>
-
-          <button id="loadExample" class="button" type="button">
-            Load example
-          </button>
-        </div>
-
-        <div id="inspectorMessage" class="inspector-message" role="alert"></div>
+          placeholder='{"kind":1,"content":"Hello Nostr!","pubkey":"..."}'></textarea>
       </div>
 
+      <div class="sheet-actions">
+        <button id="explainEvent" class="button primary" type="button">
+          Explain event
+        </button>
+        <button id="loadExample" class="button" type="button">
+          Load example
+        </button>
+      </div>
+
+      <div id="inspectorMessage" class="inspector-message" role="alert"></div>
       <div id="inspectorResult" class="inspector-result"></div>
     </section>
   </div>
 
+  <!-- Link extractor overlay -->
   <div id="linkOverlay" class="overlay" aria-hidden="true">
-    <section
-      class="sheet inspector-sheet"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="linkTitle"
-    >
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="linkTitle">
       <div class="sheet-top">
         <div>
           <p class="sheet-label">EVENT LINK PARSER</p>
           <h2 id="linkTitle">Find an event</h2>
         </div>
-
-        <button
-          class="close"
-          type="button"
-          data-close="link"
-          aria-label="Close"
-        >×</button>
+        <button class="close" type="button" data-close-link aria-label="Close">×</button>
       </div>
 
       <p class="beginner-copy">
-        Paste a Nostr note, event link, identifier, or event JSON.
-        Atlas will find the event ID and help you inspect it.
+        Paste a BCH Nostr note, event link, identifier, or event JSON.
       </p>
 
       <div class="detail-section">
-        <label class="sr-only" for="linkInput">
-          Nostr event link or identifier
-        </label>
-
+        <label class="sr-only" for="linkInput">Nostr event link or identifier</label>
         <input
           id="linkInput"
-          class="inspector-input"
+          class="inspector-input single-input"
           type="text"
           autocomplete="off"
           spellcheck="false"
-          placeholder="https://bchnostr.com/note/dd244207..."
-        >
-
-        <div class="sheet-actions">
-          <button id="extractEventId" class="button primary" type="button">
-            Extract Event ID
-          </button>
-
-          <button id="loadBchExample" class="button" type="button">
-            Load BCH Nostr Example
-          </button>
-        </div>
-
-        <div id="linkMessage" class="inspector-message" role="alert"></div>
+          placeholder="https://bchnostr.com/note/...">
       </div>
 
+      <div class="sheet-actions">
+        <button id="extractEventId" class="button primary" type="button">
+          Extract Event ID
+        </button>
+        <button id="loadBchExample" class="button" type="button">
+          Load BCH Example
+        </button>
+      </div>
+
+      <div id="linkMessage" class="inspector-message" role="alert"></div>
       <div id="linkResult" class="inspector-result"></div>
     </section>
   </div>
 
-  <script>
-    const KINDS_SOURCE = "https://nostrbook.dev/kinds/";
-    const DEFAULT_RELAY = "wss://relay.bchnostr.com";
+  <!-- Topology overlay -->
+  <div id="topologyOverlay" class="overlay" aria-hidden="true">
+    <section class="sheet topology-sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="topologyTitle">
 
-    const FALLBACK_KINDS = [
-      [0, "User Metadata", "Profile information and user settings", "NIP-01"],
-      [1, "Short Text Note", "The basic text note/post", "NIP-10"],
-      [3, "Follow List", "List of followed profiles", "NIP-02"],
-      [4, "Encrypted Direct Message", "Private messages (deprecated)", "NIP-04"],
-      [5, "Event Deletion Request", "Request to delete previously published events", "NIP-09"],
-      [6, "Repost", "Sharing a text note with followers", "NIP-18"],
-      [7, "Reaction", "Like, dislike, or emoji reaction to an event", "NIP-25"],
-      [8, "Badge Award", "Award badges to users", "NIP-58"],
-      [9, "Chat Message", "Simple chat messaging", "NIP-C7"],
-      [10, "Group Chat Threaded Reply", "Threaded replies in group chats", "NIP-29"],
-      [11, "Thread", "Discussion thread root", "NIP-7D"],
-      [12, "Group Thread Reply", "Replies to threads in group chats", "NIP-29"],
-      [13, "Seal", "Encrypted wrapper for an unsigned event", "NIP-59"],
-      [14, "Direct Message", "Private messaging with enhanced security", "NIP-17"],
-      [15, "File Message", "Encrypted file sharing", "NIP-17"],
-      [16, "Generic Repost", "Reposting non-text-note content", "NIP-18"],
-      [17, "Reaction to a Website", "Reaction to web content", "NIP-25"],
-      [20, "Picture", "Image-centric posts", "NIP-68"],
-      [21, "Video Event", "Video-centric content", "NIP-71"],
-      [22, "Short-form Portrait Video", "Vertical short-form video content", "NIP-71"],
-      [40, "Channel Creation", "Create a public chat channel", "NIP-28"],
-      [41, "Channel Metadata", "Update chat channel information", "NIP-28"],
-      [42, "Channel Message", "Message posted to a channel", "NIP-28"],
-      [43, "Channel Hide Message", "Hide a specific channel message", "NIP-28"],
-      [44, "Channel Mute User", "Mute a user in a channel", "NIP-28"],
-      [62, "Request to Vanish", "Request for complete data removal", "NIP-62"],
-      [64, "Chess (PGN)", "Chess games in PGN format", "NIP-64"],
-      [1018, "Poll Response", "Vote on a poll", "NIP-88"],
-      [1059, "Gift Wrap", "Encrypted outer wrapper for secure messaging", "NIP-59"],
-      [1063, "File Metadata", "Metadata for shared files", "NIP-94"],
-      [1068, "Poll", "Create a poll with voting options", "NIP-88"],
-      [1111, "Comment", "Structured comments on content", "NIP-22"],
-      [1337, "Code Snippet", "Programming code with metadata", "NIP-C0"],
-      [1617, "Git Patch", "Proposed changes to a Git repository using patches", "NIP-34"],
-      [1621, "Git Issue", "Bug reports or feature requests", "NIP-34"],
-      [1984, "Reporting", "Report objectionable content", "NIP-56"],
-      [1985, "Label", "Apply labels to events and entities", "NIP-32"],
-      [2003, "Torrent", "BitTorrent content index", "NIP-35"],
-      [2004, "Torrent Comment", "Comments on torrents", "NIP-35"],
-      [4550, "Community Post Approval", "Approval of posts by moderators", "NIP-72"],
-      [7374, "Cashu Quote", "Tracks mint payment quotes", "NIP-60"],
-      [7375, "Cashu Token", "Stores unspent Cashu proofs", "NIP-60"],
-      [7376, "Nutzap Redemption", "Records redemption of Nutzap tokens", "NIP-61"],
-      [9000, "Group User Addition", "Add a user to a group or modify roles", "NIP-29"],
-      [9001, "Group User Removal", "Remove a user from a group", "NIP-29"],
-      [9002, "Group Metadata Edit", "Modify a group's metadata", "NIP-29"],
-      [9005, "Group Event Deletion", "Delete or hide a group event", "NIP-29"],
-      [9007, "Group Creation", "Create a new relay-based group", "NIP-29"],
-      [9008, "Group Deletion", "Delete or deactivate a group", "NIP-29"],
-      [9009, "Group Invite Creation", "Create an invitation code", "NIP-29"],
-      [9021, "Group Join Request", "Request admission to a group", "NIP-29"],
-      [9022, "Group Leave Request", "Request to leave a group", "NIP-29"],
-      [9041, "Zap Goal", "Fundraising target for Lightning payments", "NIP-75"],
-      [9321, "Nutzap", "P2PK Cashu token payment", "NIP-61"],
-      [9734, "Zap Request", "Request for a Lightning payment invoice", "NIP-57"],
-      [9735, "Zap Receipt", "Confirmation of a Lightning payment", "NIP-57"],
-      [9802, "Highlights", "Highlighted content excerpts", "NIP-84"],
-      [10000, "Mute List", "Content and users to hide from feeds", "NIP-51"],
-      [10001, "Pinned Notes", "Notes to showcase on a profile", "NIP-51"],
-      [10002, "Relay List Metadata", "User's preferred relays for discovery", "NIP-65"],
-      [10003, "Bookmarks", "Saved content for later reference", "NIP-51"],
-      [10004, "Communities", "Communities the user belongs to", "NIP-51"],
-      [10005, "Public Chats", "Chat channels the user participates in", "NIP-51"],
-      [10006, "Blocked Relays", "Relays clients should never connect to", "NIP-51"],
-      [10007, "Search Relays", "Relays optimized for search queries", "NIP-51"],
-      [10009, "Simple Groups", "Private group memberships", "NIP-51"],
-      [10013, "Private Relay List", "Encrypted list of relays", "NIP-37"],
-      [10019, "Nutzap Informational", "Configuration for receiving Nutzaps", "NIP-61"],
-      [10030, "Emojis", "Preferred emojis and emoji sets", "NIP-51"],
-      [10040, "Trusted Service Providers", "Authorized trusted assertion providers", "NIP-85"],
-      [10050, "DM Relays", "Preferred relays for direct messages", "NIP-17"],
-      [17375, "Cashu Wallet", "Cashu wallet configuration", "NIP-60"],
-      [30000, "Follow Sets", "Categorized lists of followed profiles", "NIP-51"],
-      [30002, "Relay Sets", "Categorized relay groups", "NIP-51"],
-      [30003, "Bookmark Sets", "Categorized bookmark collections", "NIP-51"],
-      [30007, "Kind Mute Sets", "Mute users for specific event kinds", "NIP-51"],
-      [30008, "Profile Badges", "Badges displayed on a profile", "NIP-58"],
-      [30009, "Badge Definition", "Defines a badge that can be awarded", "NIP-58"],
-      [30023, "Long-form Content", "Articles and blog posts", "NIP-23"],
-      [30024, "Draft Long-form Content", "Unpublished drafts of articles", "NIP-23"],
-      [30030, "Emoji Sets", "Categorized emoji groups", "NIP-51"],
-      [30078, "Arbitrary custom app data", "Application-specific data storage", "NIP-78"],
-      [30382, "User Trusted Assertions", "Computed metrics about users", "NIP-85"],
-      [30383, "Event Trusted Assertions", "Computed metrics about events", "NIP-85"],
-      [30384, "Addressable Event Trusted Assertions", "Computed metrics about addressable events", "NIP-85"],
-      [30385, "External Identifier Trusted Assertions", "Computed metrics about external entities", "NIP-85"],
-      [30617, "Git Repository Announcement", "Announce a Git repository", "NIP-34"],
-      [30618, "Git Repository State Announcement", "Announce repository state", "NIP-34"],
-      [31234, "Draft Event", "Private wrapper for any draft event", "NIP-37"],
-      [31922, "Date-Based Calendar Event", "Calendar events on specific dates", "NIP-52"],
-      [31923, "Time-Based Calendar Event", "Calendar events at specific times", "NIP-52"],
-      [31924, "Calendar", "Collection of calendar events", "NIP-52"],
-      [31925, "Calendar Event RSVP", "Response to a calendar invitation", "NIP-52"],
-      [31989, "Handler Recommendation", "Recommends apps for event kinds", "NIP-89"],
-      [31990, "Handler Information", "Explains how apps handle event kinds", "NIP-89"],
-      [34550, "Community Definition", "Definition of a moderated community", "NIP-72"],
-      [39000, "Group Metadata", "Metadata for a relay-based group", "NIP-29"],
-      [39001, "Group Admins", "List of group administrators", "NIP-29"],
-      [39002, "Group Members", "List of group members", "NIP-29"],
-      [39003, "Group Roles", "Defines administrative roles", "NIP-29"]
-    ];
+      <div class="sheet-top">
+        <div>
+          <p class="sheet-label">INTERACTION TOPOLOGY</p>
+          <h2 id="topologyTitle">Post network</h2>
+        </div>
+
+        <button
+          class="close"
+          type="button"
+          data-close-topology
+          aria-label="Close">×</button>
+      </div>
+
+      <div class="topology-controls">
+        <label>
+          Event link or ID
+          <input
+            id="topologyInput"
+            class="inspector-input"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="https://bchnostr.com/note/...">
+        </label>
+
+        <label>
+          Relay
+          <input
+            id="topologyRelay"
+            class="relay-input"
+            value="wss://relay.bch.nostr.com">
+        </label>
+
+        <button id="analyzeTopology" class="button success" type="button">
+          Analyze network
+        </button>
+      </div>
+
+      <div id="topologyMessage" class="inspector-message" role="status"></div>
+      <div id="topologyStats" class="topology-stats"></div>
+
+      <div class="topology-layout">
+        <div
+          id="topologyGraph"
+          class="topology-graph"
+          aria-label="Nostr interaction topology">
+          <div style="padding:24px;color:#656c83;font-size:12px;">
+            Paste a public BCH Nostr post link and analyze the network.
+          </div>
+        </div>
+
+        <aside id="topologyDetails" class="topology-details">
+          Select a node to inspect the account.
+        </aside>
+      </div>
+
+      <div id="topologyLegend" class="topology-legend"></div>
+
+      <p class="topology-note">
+        The graph shows publicly discoverable events returned by the selected relay.
+        It cannot guarantee complete network-wide coverage.
+      </p>
+    </section>
+  </div>
+
+  <script>
+    "use strict";
+
+    const KIND_SOURCE = "https://nostrbook.dev/kinds";
+    const DEFAULT_RELAY = "wss://relay.bch.nostr.com";
 
     const CATEGORY_ORDER = [
       "Social",
@@ -1210,50 +1224,91 @@
       "Other"
     ];
 
-    const NIP_URLS = {};
+    const TOPOLOGY_COLORS = {
+      post: "#ff825c",
+      comment: "#b894ff",
+      reaction: "#ff5ca8",
+      repost: "#78d6a6",
+      zap: "#f2c96d",
+      quote: "#5cd9ff",
+      unknown: "#9795a4"
+    };
+
     const FIELD_EXPLANATIONS = {
-      id: "The event identifier: a hash of the serialized event data.",
+      id: "The event identifier, calculated from the serialized event data.",
       pubkey: "The public key of the event author.",
       created_at: "The event creation time as a Unix timestamp in seconds.",
       kind: "The number that tells clients how to interpret this event.",
       tags: "Structured references and metadata attached to the event.",
-      content: "The event's main payload, which may be text, JSON, Markdown, or encrypted data.",
+      content: "The event's main payload.",
       sig: "The cryptographic signature proving that the event was signed by the author."
     };
 
-    const universe = document.getElementById("universe");
-    const search = document.getElementById("search");
-    const clearSearch = document.getElementById("clearSearch");
-    const resultCount = document.getElementById("resultCount");
-    const noResults = document.getElementById("noResults");
-    const sourceStatus = document.getElementById("sourceStatus");
-    const sourceDot = document.getElementById("sourceDot");
-
-    const detailOverlay = document.getElementById("detailOverlay");
-    const detailSheet = document.getElementById("detailSheet");
-
-    const inspectorOverlay = document.getElementById("inspectorOverlay");
-    const eventInput = document.getElementById("eventInput");
-    const inspectorResult = document.getElementById("inspectorResult");
-    const inspectorMessage = document.getElementById("inspectorMessage");
-
-    const linkOverlay = document.getElementById("linkOverlay");
-    const linkInput = document.getElementById("linkInput");
-    const linkResult = document.getElementById("linkResult");
-    const linkMessage = document.getElementById("linkMessage");
+    const FALLBACK_KINDS = [
+      [0, "User Metadata", "Profile information and user settings", "NIP-01"],
+      [1, "Short Text Note", "The basic text note or post", "NIP-01"],
+      [3, "Follow List", "List of followed profiles", "NIP-02"],
+      [5, "Event Deletion Request", "Request to delete a previously published event", "NIP-09"],
+      [6, "Repost", "Sharing a text note with followers", "NIP-18"],
+      [7, "Reaction", "Like, dislike, or emoji reaction to an event", "NIP-25"],
+      [20, "Picture", "Image-centric posts", "NIP-68"],
+      [40, "Channel Creation", "Create a public chat channel", "NIP-28"],
+      [42, "Channel Message", "Message posted to a channel", "NIP-28"],
+      [62, "Request to Vanish", "Request for complete data removal", "NIP-62"],
+      [1063, "File Metadata", "Metadata for shared files", "NIP-94"],
+      [1111, "Comment", "Structured comments on content", "NIP-22"],
+      [1984, "Reporting", "Report objectionable content", "NIP-56"],
+      [1985, "Label", "Apply labels to events and entities", "NIP-32"],
+      [30023, "Long-form Content", "Articles and blog posts", "NIP-23"],
+      [30024, "Draft Long-form Content", "Unpublished article drafts", "NIP-23"],
+      [31922, "Date-Based Calendar Event", "Calendar events on specific dates", "NIP-52"],
+      [31923, "Time-Based Calendar Event", "Calendar events at specific times", "NIP-52"],
+      [31924, "Calendar", "Collection of calendar events", "NIP-52"],
+      [31925, "Calendar Event RSVP", "Response to a calendar invitation", "NIP-52"],
+      [9734, "Zap Request", "Request for a Lightning payment", "NIP-57"],
+      [9735, "Zap Receipt", "Confirmation of a Lightning payment", "NIP-57"],
+      [10000, "Mute List", "Content and users to hide from feeds", "NIP-51"],
+      [10002, "Relay List Metadata", "Preferred relays for discovery", "NIP-65"],
+      [30000, "Follow Sets", "Categorized lists of followed profiles", "NIP-51"],
+      [30002, "Relay Sets", "Categorized relay groups", "NIP-51"],
+      [30078, "Arbitrary Custom App Data", "Application-specific data storage", "NIP-78"]
+    ];
 
     let KIND_DATA = [];
     let lastFocusedElement = null;
-    let placeholderIndex = 0;
+    let topologyData = null;
 
-    const searchExamples = [
-      "30023",
-      "article",
-      "reaction",
-      "private message",
-      "NIP-17",
-      "calendar"
-    ];
+    const $ = id => document.getElementById(id);
+
+    const universe = $("universe");
+    const search = $("search");
+    const clearSearch = $("clearSearch");
+    const resultCount = $("resultCount");
+    const noResults = $("noResults");
+    const sourceStatus = $("sourceStatus");
+    const sourceDot = $("sourceDot");
+
+    const detailOverlay = $("detailOverlay");
+    const detailSheet = $("detailSheet");
+
+    const inspectorOverlay = $("inspectorOverlay");
+    const eventInput = $("eventInput");
+    const inspectorMessage = $("inspectorMessage");
+    const inspectorResult = $("inspectorResult");
+
+    const linkOverlay = $("linkOverlay");
+    const linkInput = $("linkInput");
+    const linkMessage = $("linkMessage");
+    const linkResult = $("linkResult");
+
+    const topologyOverlay = $("topologyOverlay");
+    const topologyInput = $("topologyInput");
+    const topologyRelay = $("topologyRelay");
+    const topologyMessage = $("topologyMessage");
+    const topologyStats = $("topologyStats");
+    const topologyGraph = $("topologyGraph");
+    const topologyDetails = $("topologyDetails");
+    const topologyLegend = $("topologyLegend");
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -1264,231 +1319,40 @@
         .replaceAll("'", "&#039;");
     }
 
-    function getKind(kindNumber) {
-      return KIND_DATA.find(item => item.kind === Number(kindNumber));
+    function shortKey(value, size = 10) {
+      const text = String(value || "");
+      if (text.length <= size * 2) return text;
+      return `${text.slice(0, size)}…${text.slice(-size)}`;
     }
 
-    function nipNumber(nip) {
-      return String(nip || "").replace(/^NIP-/i, "");
+    function validHexId(value) {
+      return /^[a-f0-9]{64}$/i.test(value || "");
+    }
+
+    function normalizeNip(value) {
+      return String(value || "").replace(/^NIP[- ]?/i, "");
     }
 
     function nipUrl(nip) {
-      const number = nipNumber(nip);
-
-      if (/^\d+$/.test(number)) {
-        return `https://nips.nostr.com/${number}`;
-      }
-
-      return `https://github.com/nostr-protocol/nips/blob/master/${number.toLowerCase()}.md`;
+      const number = normalizeNip(nip);
+      if (!/^\d+$/.test(number)) return "#";
+      return `https://nips.nostr.com/${number}`;
     }
 
-    function inferCategory(kind, name, nip) {
-      const text = `${kind} ${name} ${nip}`.toLowerCase();
-      const numericKind = Number(kind);
+    function inferCategory(kind, name, description) {
+      const text = `${kind} ${name} ${description}`.toLowerCase();
 
-      if (
-        /reaction|repost|comment|note|thread|poll|highlight|report|label/.test(text)
-      ) return "Social";
-
-      if (
-        /profile|metadata|follow|bookmark|mute|relay list|emoji|trusted|handler/.test(text) ||
-        numericKind === 0 ||
-        numericKind === 3
-      ) return "Identity";
-
-      if (
-        /message|chat|group|channel|seal|gift wrap|dm relay|private/.test(text)
-      ) return "Messaging";
-
+      if (/reaction|repost|comment|note|thread|poll|highlight|report|label/.test(text)) return "Social";
+      if (/profile|metadata|follow|bookmark|mute|relay list|emoji/.test(text)) return "Identity";
+      if (/message|chat|group|channel|direct|seal|gift wrap/.test(text)) return "Messaging";
       if (/picture|video|file|image|media/.test(text)) return "Media";
-      if (/article|long-form|draft|content|snippet|patch|issue|repository|code|torrent/.test(text)) return "Content";
+      if (/article|long-form|draft|content|code|patch|issue|repository|torrent/.test(text)) return "Content";
+      if (/community/.test(text)) return "Communities";
       if (/calendar|rsvp|date-based|time-based/.test(text)) return "Calendar";
-      if (/zap|lightning|cashu|nutzap|wallet|payment/.test(text)) return "Lightning";
+      if (/zap|lightning|cashu|payment|wallet|nutzap/.test(text)) return "Lightning";
       if (/git|repository|code|patch|issue/.test(text)) return "Development";
-      if (/community|group/.test(text)) return "Communities";
 
       return "Other";
-    }
-
-    function inferAddressability(kind) {
-      const number = Number(kind);
-
-      if (number === 0 || number === 3 || (number >= 10000 && number < 20000)) {
-        return "replaceable";
-      }
-
-      if (number >= 20000 && number < 30000) {
-        return "ephemeral";
-      }
-
-      if (number >= 30000 && number < 40000) {
-        return "addressable";
-      }
-
-      return "regular";
-    }
-
-    function inferStatus(name, description) {
-      const text = `${name} ${description}`.toLowerCase();
-
-      if (text.includes("deprecated")) return "deprecated";
-      return "registry";
-    }
-
-    function buildExplanation(item) {
-      const lower = `${item.name} ${item.description}`.toLowerCase();
-
-      if (item.kind === 1) {
-        return "A public text note is the simplest social event: someone publishes text that clients can display, reply to, repost, or react to.";
-      }
-
-      if (item.kind === 7) {
-        return "People use this event to react to another event. The referenced event and its author are normally included in tags.";
-      }
-
-      if (item.kind === 30023) {
-        return "An article or long-form post. Authors can update the same article by publishing another event with the same identifier.";
-      }
-
-      if (item.kind === 0) {
-        return "A profile event describes the person or account behind a public key. Clients commonly read its content as a small JSON metadata object.";
-      }
-
-      if (lower.includes("calendar")) {
-        return "A calendar-related event describes something scheduled, published, or associated with a date or time.";
-      }
-
-      if (lower.includes("message") || lower.includes("chat")) {
-        return "A messaging event carries information between participants, channels, or groups.";
-      }
-
-      if (lower.includes("repost")) {
-        return "A repost points to another event so clients can show it to more people as something the author chose to share.";
-      }
-
-      if (lower.includes("reaction")) {
-        return "A reaction connects one event to another and expresses an opinion, response, or emoji.";
-      }
-
-      return `${item.name} is a Nostr event kind defined for ${item.description.toLowerCase()}.`;
-    }
-
-    function buildStructure(item) {
-      const lower = `${item.name} ${item.description}`.toLowerCase();
-
-      if (item.kind === 30023) {
-        return ["kind", "content", "d", "title", "image", "summary"];
-      }
-
-      if (item.kind === 1) {
-        return ["kind", "content", "e", "p", "t"];
-      }
-
-      if (item.kind === 7) {
-        return ["kind", "content", "e", "p", "k"];
-      }
-
-      if (
-        lower.includes("message") ||
-        lower.includes("chat") ||
-        lower.includes("group")
-      ) {
-        return ["kind", "content", "p", "e"];
-      }
-
-      if (
-        lower.includes("list") ||
-        lower.includes("set") ||
-        lower.includes("relay") ||
-        lower.includes("bookmark")
-      ) {
-        return ["kind", "content", "tags"];
-      }
-
-      return ["kind", "content", "tags"];
-    }
-
-    function buildTags(item) {
-      const lower = `${item.name} ${item.description}`.toLowerCase();
-
-      if (item.kind === 30023) {
-        return ["d", "title", "image", "summary", "published_at"];
-      }
-
-      if (item.kind === 7) {
-        return ["e", "p", "k"];
-      }
-
-      if (item.kind === 1) {
-        return ["e", "p", "t"];
-      }
-
-      if (lower.includes("calendar")) {
-        return ["d", "title", "start", "end"];
-      }
-
-      if (lower.includes("reaction")) {
-        return ["e", "p", "k"];
-      }
-
-      if (lower.includes("message") || lower.includes("chat")) {
-        return ["p", "e"];
-      }
-
-      if (lower.includes("profile") || lower.includes("follow")) {
-        return ["p"];
-      }
-
-      return [];
-    }
-
-    function buildFields(item) {
-      const fields = {};
-
-      (item.tags || []).forEach(tag => {
-        fields[tag] = tagExplanation(tag);
-      });
-
-      if (item.kind === 0) {
-        fields.content = "A JSON string containing profile metadata such as name, about, and picture.";
-      }
-
-      if (item.kind === 1) {
-        fields.content = "The text of the note.";
-      }
-
-      if (item.kind === 7) {
-        fields.content = "The reaction content, often +, -, or an emoji.";
-      }
-
-      if (item.kind === 30023) {
-        fields.content = "The article body, typically written in Markdown.";
-      }
-
-      return fields;
-    }
-
-    function tagExplanation(tag) {
-      const explanations = {
-        e: "References another event.",
-        p: "References another public key.",
-        a: "References an addressable or replaceable event.",
-        d: "An identifier used to address or update an event.",
-        t: "A topic or hashtag.",
-        k: "The kind number of the referenced event.",
-        title: "A human-readable title.",
-        image: "A URL for an image.",
-        summary: "A short description.",
-        published_at: "The publication timestamp.",
-        start: "The event start date or timestamp.",
-        end: "The event end date or timestamp.",
-        alt: "Alternative text.",
-        imeta: "Inline media metadata.",
-        bolt11: "A Lightning invoice.",
-        description: "A payment or event description."
-      };
-
-      return explanations[tag] || "A protocol-specific tag.";
     }
 
     function normalizeKind(raw) {
@@ -1497,222 +1361,132 @@
       const description = String(raw[2] || "No description supplied.").trim();
       const nip = String(raw[3] || "Unknown").trim();
 
-      const item = {
+      return {
         kind,
         name,
         description,
-        category: inferCategory(kind, name, nip),
-        aliases: [name, description],
-        nips: nip === "Unknown" ? [] : [nip],
-        status: inferStatus(name, description),
-        addressability: inferAddressability(kind),
-        structure: [],
-        tags: [],
-        fields: {},
-        related: [],
-        explanation: ""
+        nip,
+        category: inferCategory(kind, name, description)
       };
-
-      item.structure = buildStructure(item);
-      item.tags = buildTags(item);
-      item.fields = buildFields(item);
-      item.explanation = buildExplanation(item);
-
-      return item;
     }
 
-    function fallbackKinds() {
-      return FALLBACK_KINDS.map(normalizeKind);
+    function getKind(kind) {
+      return KIND_DATA.find(item => item.kind === Number(kind));
     }
 
-    function parseNostrbookKinds(markdown) {
-      const rows = [];
-      const lines = markdown.split(/\r?\n/);
-
-      for (const line of lines) {
-        const match = line.match(
-          /^\s*\|?\s*(\d+)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|?\s*$/
-        );
-
-        if (!match) continue;
-
-        const kind = Number(match[1]);
-        const name = match[2].trim();
-        const description = match[3].trim();
-        const nip = match[4].trim();
-
-        if (
-          Number.isInteger(kind) &&
-          name &&
-          description &&
-          !/^kind$/i.test(name)
-        ) {
-          rows.push([kind, name, description, nip]);
-        }
+    function buildKindExplanation(item) {
+      if (item.kind === 0) {
+        return "A profile event usually contains JSON metadata describing the person or account behind a public key.";
       }
 
-      return rows;
+      if (item.kind === 1) {
+        return "A public text note is a basic social event that clients can display, reply to, repost, or react to.";
+      }
+
+      if (item.kind === 6) {
+        return "A repost points to another event so clients can show it to more people.";
+      }
+
+      if (item.kind === 7) {
+        return "A reaction connects one event to another and expresses an opinion, response, or emoji.";
+      }
+
+      if (item.kind === 1111) {
+        return "A structured comment responds to another piece of content and normally references it with tags.";
+      }
+
+      if (item.kind === 30023) {
+        return "An article or long-form post. Authors can update the same article by publishing another addressable event.";
+      }
+
+      return `${item.name} is a Nostr event kind defined for ${item.description.toLowerCase()}.`;
     }
 
-    function parseKindsFromHtml(html) {
-      const documentParser = new DOMParser();
-      const parsed = documentParser.parseFromString(html, "text/html");
-      const rows = [];
-
-      parsed.querySelectorAll("table tr").forEach(row => {
-        const cells = Array.from(row.querySelectorAll("th, td"))
-          .map(cell => cell.textContent.trim());
-
-        if (cells.length < 4) return;
-        if (!/^\d+$/.test(cells[0])) return;
-
-        rows.push([
-          Number(cells[0]),
-          cells[1],
-          cells[2],
-          cells[3]
-        ]);
-      });
-
-      return rows;
+    function buildKindTags(item) {
+      if ([6, 7, 1111].includes(item.kind)) return ["e", "p", "k"];
+      if ([1].includes(item.kind)) return ["e", "p", "t"];
+      if ([30023].includes(item.kind)) return ["d", "title", "image", "summary"];
+      if ([31922, 31923, 31924, 31925].includes(item.kind)) return ["d", "title", "start", "end"];
+      return ["e", "p", "a", "d", "t"];
     }
 
     async function loadKinds() {
-      const fallback = fallbackKinds();
+      const fallback = FALLBACK_KINDS.map(normalizeKind);
 
       try {
-        const response = await fetch(KINDS_SOURCE, {
+        const response = await fetch(KIND_SOURCE, {
           method: "GET",
           mode: "cors",
           cache: "no-store"
         });
 
-        if (!response.ok) {
-          throw new Error(`Source returned HTTP ${response.status}`);
-        }
+        if (!response.ok) throw new Error("Kinds source unavailable");
 
-        const body = await response.text();
-        let rows = parseKindsFromHtml(body);
+        const html = await response.text();
+        const parsed = new DOMParser().parseFromString(html, "text/html");
+        const rows = [];
 
-        if (!rows.length) {
-          rows = parseNostrbookKinds(body);
-        }
+        parsed.querySelectorAll("table tr").forEach(row => {
+          const cells = [...row.querySelectorAll("th,td")]
+            .map(cell => cell.textContent.trim());
 
-        if (!rows.length) {
-          throw new Error("No kind rows found.");
-        }
+          if (cells.length < 4) return;
+          if (!/^\d+$/.test(cells[0])) return;
 
-        KIND_DATA = rows
-          .map(normalizeKind)
-          .filter(item => Number.isInteger(item.kind))
-          .sort((a, b) => a.kind - b.kind);
+          rows.push(normalizeKind([
+            Number(cells[0]),
+            cells[1],
+            cells[2],
+            cells[3]
+          ]));
+        });
 
-        sourceStatus.textContent = `Live Nostrbook · ${KIND_DATA.length} kinds`;
-        sourceDot.className = "source-dot live";
-      } catch (error) {
-        KIND_DATA = fallback;
+        if (!rows.length) throw new Error("No kind rows found");
 
-        sourceStatus.textContent =
-          `Fallback data · ${KIND_DATA.length} kinds`;
-
-        sourceDot.className = "source-dot fallback";
+        KIND_DATA = rows.sort((a, b) => a.kind - b.kind);
+        sourceStatus.textContent = `${KIND_DATA.length} live kinds`;
+        sourceDot.classList.add("live");
+      } catch {
+        KIND_DATA = fallback.sort((a, b) => a.kind - b.kind);
+        sourceStatus.textContent = `${KIND_DATA.length} fallback kinds`;
       }
 
-      renderUniverse(search.value);
-      openInitialKind();
+      renderUniverse("");
     }
 
-    function getRelatedKinds(item) {
-      const relationships = [];
-
-      if (item.kind === 1) {
-        relationships.push(6, 7, 1111);
-      }
-
-      if (item.kind === 7) {
-        relationships.push(1, 6, 1111);
-      }
-
-      if (item.kind === 30023) {
-        relationships.push(1, 7, 1111, 30024);
-      }
-
-      if (item.kind === 14) {
-        relationships.push(13, 15, 1059);
-      }
-
-      if (item.kind >= 31922 && item.kind <= 31925) {
-        relationships.push(31922, 31923, 31924, 31925);
-      }
-
-      const sameNip = KIND_DATA
-        .filter(candidate =>
-          candidate.kind !== item.kind &&
-          candidate.nips.some(nip =>
-            item.nips.includes(nip)
-          )
-        )
-        .slice(0, 5)
-        .map(candidate => candidate.kind);
-
-      return [...new Set([...relationships, ...sameNip])]
-        .map(getKind)
-        .filter(Boolean)
-        .slice(0, 8);
-    }
-
-    function searchableText(item) {
-      return [
-        item.kind,
-        item.name,
-        item.description,
-        item.category,
-        item.status,
-        item.addressability,
-        ...(item.aliases || []),
-        ...(item.nips || []),
-        ...(item.tags || [])
-      ].join(" ").toLowerCase();
-    }
-
-    function matches(item, query) {
+    function renderUniverse(query) {
       const q = String(query || "").trim().toLowerCase();
 
-      if (!q) return true;
-      if (String(item.kind) === q) return true;
-      if (item.name.toLowerCase() === q) return true;
-      if ((item.nips || []).some(nip => nip.toLowerCase() === q)) return true;
+      const matches = KIND_DATA.filter(item => {
+        if (!q) return true;
 
-      return searchableText(item).includes(q);
-    }
+        return [
+          item.kind,
+          item.name,
+          item.description,
+          item.nip,
+          item.category
+        ].join(" ").toLowerCase().includes(q);
+      });
 
-    function renderUniverse(query = "") {
-      const filtered = KIND_DATA.filter(item => matches(item, query));
       universe.innerHTML = "";
 
       CATEGORY_ORDER.forEach(category => {
-        const categoryKinds = filtered.filter(item => item.category === category);
-        if (!categoryKinds.length) return;
+        const items = matches.filter(item => item.category === category);
+        if (!items.length) return;
 
         const section = document.createElement("section");
         section.className = "category";
 
         section.innerHTML = `
           <h3 class="category-heading">${escapeHtml(category)}</h3>
-
           <div class="kind-grid">
-            ${categoryKinds.map(item => `
-              <button
-                class="kind-card"
-                type="button"
-                data-kind="${item.kind}"
-              >
+            ${items.map(item => `
+              <button class="kind-card" type="button" data-kind="${item.kind}">
                 <span class="kind-number">${item.kind}</span>
                 <span class="kind-name">${escapeHtml(item.name)}</span>
                 <span class="kind-description">${escapeHtml(item.description)}</span>
-                <span class="card-meta">
-                  ${escapeHtml(item.nips?.[0] || item.status)}
-                </span>
+                <span class="card-meta">${escapeHtml(item.nip)}</span>
               </button>
             `).join("")}
           </div>
@@ -1721,275 +1495,15 @@
         universe.appendChild(section);
       });
 
-      resultCount.textContent = query.trim()
-        ? `${filtered.length} result${filtered.length === 1 ? "" : "s"}`
+      universe.querySelectorAll("[data-kind]").forEach(card => {
+        card.addEventListener("click", () => openKind(card.dataset.kind));
+      });
+
+      resultCount.textContent = q
+        ? `${matches.length} of ${KIND_DATA.length} kinds`
         : `${KIND_DATA.length} documented kinds`;
 
-      noResults.style.display = filtered.length ? "none" : "block";
-
-      document.querySelectorAll("[data-kind]").forEach(card => {
-        card.addEventListener("click", () => {
-          openKind(Number(card.dataset.kind));
-        });
-      });
-    }
-
-    function statusLabel(status) {
-      return status.charAt(0).toUpperCase() + status.slice(1);
-    }
-
-    function statusClass(status) {
-      if (status === "official" || status === "registry") return "green";
-      if (status === "draft" || status === "experimental") return "yellow";
-      if (status === "deprecated") return "danger";
-      return "";
-    }
-
-    function exampleEvent(item) {
-      const tags = [];
-
-      (item.tags || []).forEach(tag => {
-        if (tag === "d") tags.push(["d", "my-first-article"]);
-        else if (tag === "title") tags.push(["title", "A small idea"]);
-        else if (tag === "image") tags.push(["image", "https://example.com/cover.jpg"]);
-        else if (tag === "summary") tags.push(["summary", "A short summary"]);
-        else if (tag === "published_at") tags.push(["published_at", "1770000000"]);
-        else if (tag === "e") tags.push(["e", "event-id"]);
-        else if (tag === "p") tags.push(["p", "author-pubkey"]);
-        else if (tag === "k") tags.push(["k", String(item.kind)]);
-        else if (tag === "t") tags.push(["t", "nostr"]);
-        else if (tag === "alt") tags.push(["alt", "A descriptive image"]);
-        else if (tag === "imeta") tags.push(["imeta", "url https://example.com/media.jpg"]);
-      });
-
-      return {
-        id: "event-id",
-        pubkey: "author-public-key",
-        created_at: 1770000000,
-        kind: item.kind,
-        tags,
-        content: item.kind === 30023
-          ? "# A small idea\\n\\nLong-form content written in Markdown."
-          : item.kind === 7
-            ? "+"
-            : item.kind === 1
-              ? "Hello Nostr!"
-              : "Example event content",
-        sig: "event-signature"
-      };
-    }
-
-    function renderDna(item) {
-      const nodes = item.structure || ["kind", "content", "tags"];
-
-      return nodes.map((node, index) => `
-        ${index ? '<span class="dna-arrow" aria-hidden="true">→</span>' : ""}
-        <span class="dna-node">${escapeHtml(node)}</span>
-      `).join("");
-    }
-
-    function renderRelated(item) {
-      const related = getRelatedKinds(item);
-
-      if (!related.length) {
-        return `<span class="tag-chip">No related kinds loaded.</span>`;
-      }
-
-      return related.map(candidate => `
-        <button
-          class="related-chip"
-          type="button"
-          data-related-kind="${candidate.kind}"
-        >
-          ${candidate.kind} · ${escapeHtml(candidate.name)}
-        </button>
-      `).join("");
-    }
-
-    function openKind(kindNumber, updateHash = true) {
-      const item = getKind(kindNumber);
-
-      if (!item) {
-        openUnknownKind(kindNumber);
-        return;
-      }
-
-      lastFocusedElement = document.activeElement;
-
-      if (updateHash) {
-        history.pushState({}, "", `#kind/${item.kind}`);
-      }
-
-      const fields = Object.entries(item.fields || {}).map(([name, explanation]) => `
-        <div class="field">
-          <div class="field-name">${escapeHtml(name)}</div>
-          <div class="field-explanation">${escapeHtml(explanation)}</div>
-        </div>
-      `).join("");
-
-      const tags = (item.tags || []).length
-        ? item.tags.map(tag => `
-            <div class="tag-chip">
-              <strong>${escapeHtml(tag)}</strong>
-              <span>${escapeHtml(item.fields?.[tag] || tagExplanation(tag))}</span>
-            </div>
-          `).join("")
-        : `<span class="tag-chip">No documented tags in the loaded data.</span>`;
-
-      const event = exampleEvent(item);
-
-      detailSheet.innerHTML = `
-        <div class="sheet-top">
-          <div>
-            <p class="sheet-label">KIND ${item.kind}</p>
-            <h2 id="detailTitle">${escapeHtml(item.name)}</h2>
-
-            <div class="badges">
-              ${(item.nips || []).map(nip => `
-                <a
-                  class="badge accent"
-                  href="${escapeHtml(nipUrl(nip))}"
-                  target="_blank"
-                  rel="noopener"
-                >${escapeHtml(nip)}</a>
-              `).join("")}
-
-              <span class="badge ${statusClass(item.status)}">
-                ${escapeHtml(statusLabel(item.status))}
-              </span>
-
-              <span class="badge">
-                ${escapeHtml(item.addressability)}
-              </span>
-            </div>
-          </div>
-
-          <button
-            class="close"
-            type="button"
-            data-close="detail"
-            aria-label="Close"
-          >×</button>
-        </div>
-
-        <section class="detail-section">
-          <h3>What is it?</h3>
-          <p class="beginner-copy">${escapeHtml(item.explanation)}</p>
-        </section>
-
-        <section class="detail-section">
-          <h3>Nostr DNA</h3>
-          <div class="dna" aria-label="Event structure">
-            ${renderDna(item)}
-          </div>
-        </section>
-
-        <section class="detail-section">
-          <h3>What does it contain?</h3>
-          <div class="field-tree">${fields}</div>
-        </section>
-
-        <section class="detail-section">
-          <h3>Recognized tags</h3>
-          <div class="tag-list">${tags}</div>
-        </section>
-
-        <section class="detail-section">
-          <h3>Related</h3>
-          <div class="related-list">${renderRelated(item)}</div>
-        </section>
-
-        <section class="detail-section">
-          <h3>Example event</h3>
-          <pre>${escapeHtml(JSON.stringify(event, null, 2))}</pre>
-        </section>
-
-        <div class="sheet-actions">
-          <button
-            class="button primary"
-            type="button"
-            data-inspect-example
-          >Inspect event</button>
-
-          ${(item.nips || []).map(nip => `
-            <a
-              class="button"
-              href="${escapeHtml(nipUrl(nip))}"
-              target="_blank"
-              rel="noopener"
-            >View ${escapeHtml(nip)} ↗</a>
-          `).join("")}
-        </div>
-      `;
-
-      showOverlay(detailOverlay);
-
-      detailSheet.querySelector("[data-close='detail']")
-        .addEventListener("click", closeDetail);
-
-      detailSheet.querySelectorAll("[data-related-kind]").forEach(button => {
-        button.addEventListener("click", () => {
-          openKind(Number(button.dataset.relatedKind));
-        });
-      });
-
-      detailSheet.querySelector("[data-inspect-example]")
-        ?.addEventListener("click", () => {
-          eventInput.value = JSON.stringify(event, null, 2);
-          closeDetail();
-          openInspector();
-          explainEvent();
-        });
-
-      detailSheet.querySelector("[data-close='detail']").focus();
-    }
-
-    function openUnknownKind(kindNumber) {
-      lastFocusedElement = document.activeElement;
-
-      detailSheet.innerHTML = `
-        <div class="sheet-top">
-          <div>
-            <p class="sheet-label">UNKNOWN KIND</p>
-            <h2 id="detailTitle">Kind ${escapeHtml(kindNumber)}</h2>
-          </div>
-
-          <button
-            class="close"
-            type="button"
-            data-close="detail"
-            aria-label="Close"
-          >×</button>
-        </div>
-
-        <section class="detail-section">
-          <p class="beginner-copy">
-            This kind is not currently documented in the loaded registry.
-            That does not necessarily mean the event is invalid.
-          </p>
-        </section>
-
-        <section class="detail-section">
-          <h3>Generic event structure</h3>
-
-          <div class="dna">
-            <span class="dna-node">kind</span>
-            <span class="dna-arrow">→</span>
-            <span class="dna-node">pubkey</span>
-            <span class="dna-arrow">→</span>
-            <span class="dna-node">tags</span>
-            <span class="dna-arrow">→</span>
-            <span class="dna-node">content</span>
-          </div>
-        </section>
-      `;
-
-      showOverlay(detailOverlay);
-
-      detailSheet.querySelector("[data-close='detail']")
-        .addEventListener("click", closeDetail);
-
-      detailSheet.querySelector("[data-close='detail']").focus();
+      noResults.style.display = matches.length ? "none" : "block";
     }
 
     function showOverlay(overlay) {
@@ -2005,18 +1519,128 @@
       if (
         !detailOverlay.classList.contains("open") &&
         !inspectorOverlay.classList.contains("open") &&
-        !linkOverlay.classList.contains("open")
+        !linkOverlay.classList.contains("open") &&
+        !topologyOverlay.classList.contains("open")
       ) {
         document.body.classList.remove("locked");
       }
     }
 
+    function openKind(kind) {
+      const item = getKind(kind);
+      if (!item) return;
+
+      lastFocusedElement = document.activeElement;
+
+      const tags = buildKindTags(item);
+
+      detailSheet.innerHTML = `
+        <div class="sheet-top">
+          <div>
+            <p class="sheet-label">KIND ${item.kind}</p>
+            <h2 id="detailTitle">${escapeHtml(item.name)}</h2>
+          </div>
+          <button class="close" type="button" data-close-detail aria-label="Close">×</button>
+        </div>
+
+        <div class="detail-section">
+          <h3>What is it?</h3>
+          <p class="beginner-copy">${escapeHtml(buildKindExplanation(item))}</p>
+        </div>
+
+        <div class="detail-section">
+          <h3>Nostr structure</h3>
+          <div class="field-tree">
+            ${["id", "pubkey", "created_at", "kind", "tags", "content", "sig"]
+              .map(field => `
+                <div class="field">
+                  <div class="field-name">${field}</div>
+                  <div class="field-explanation">${escapeHtml(FIELD_EXPLANATIONS[field])}</div>
+                </div>
+              `).join("")}
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Recognized tags</h3>
+          <div class="topology-legend">
+            ${tags.map(tag => `
+              <span class="legend-item">
+                <span class="legend-dot" style="color:var(--cyan);background:var(--cyan)"></span>
+                ${escapeHtml(tag)}
+              </span>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Example event</h3>
+          <pre>${escapeHtml(JSON.stringify(exampleEvent(item), null, 2))}</pre>
+        </div>
+
+        <div class="sheet-actions">
+          <button class="button primary" data-inspect-example type="button">
+            Inspect example
+          </button>
+          <a class="button" href="${nipUrl(item.nip)}" target="_blank" rel="noopener">
+            View ${escapeHtml(item.nip)}
+          </a>
+        </div>
+      `;
+
+      detailSheet.querySelector("[data-close-detail]")
+        .addEventListener("click", closeDetail);
+
+      detailSheet.querySelector("[data-inspect-example]")
+        .addEventListener("click", () => {
+          eventInput.value = JSON.stringify(exampleEvent(item), null, 2);
+          closeDetail();
+          openInspector();
+          explainEvent();
+        });
+
+      showOverlay(detailOverlay);
+      detailSheet.querySelector("[data-close-detail]").focus();
+    }
+
     function closeDetail() {
       hideOverlay(detailOverlay);
-
       if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
         lastFocusedElement.focus();
       }
+    }
+
+    function exampleEvent(item) {
+      const tags = [];
+
+      if ([1, 6, 7, 1111].includes(item.kind)) {
+        tags.push(["e", "event-id", "", "root"]);
+        tags.push(["p", "author-public-key"]);
+      }
+
+      if (item.kind === 7) {
+        return {
+          id: "event-id",
+          pubkey: "author-public-key",
+          created_at: 1770000000,
+          kind: 7,
+          tags,
+          content: "❤️",
+          sig: "event-signature"
+        };
+      }
+
+      return {
+        id: "event-id",
+        pubkey: "author-public-key",
+        created_at: 1770000000,
+        kind: item.kind,
+        tags,
+        content: item.kind === 30023
+          ? "# A small article\n\nWritten in Markdown."
+          : "Hello Nostr!",
+        sig: "event-signature"
+      };
     }
 
     function openInspector() {
@@ -2027,24 +1651,8 @@
 
     function closeInspector() {
       hideOverlay(inspectorOverlay);
-      inspectorResult.classList.remove("visible");
       inspectorMessage.textContent = "";
-
-      if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
-        lastFocusedElement.focus();
-      }
-    }
-
-    function openLinkExtractor() {
-      lastFocusedElement = document.activeElement;
-      showOverlay(linkOverlay);
-      linkInput.focus();
-    }
-
-    function closeLinkExtractor() {
-      hideOverlay(linkOverlay);
-      linkResult.classList.remove("visible");
-      linkMessage.textContent = "";
+      inspectorResult.classList.remove("visible");
 
       if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
         lastFocusedElement.focus();
@@ -2060,8 +1668,7 @@
       try {
         event = JSON.parse(eventInput.value);
       } catch {
-        inspectorMessage.textContent =
-          "That is not valid JSON. Check commas, quotes, and brackets.";
+        inspectorMessage.textContent = "That is not valid JSON.";
         return;
       }
 
@@ -2071,56 +1678,35 @@
       }
 
       if (!Number.isInteger(event.kind)) {
-        inspectorMessage.textContent =
-          "This object needs a numeric kind field.";
+        inspectorMessage.textContent = "The event needs a numeric kind field.";
         return;
       }
 
       const item = getKind(event.kind);
-      const kindName = item ? item.name : "Unknown Kind";
-
-      const fields = [
-        "id",
-        "pubkey",
-        "created_at",
-        "kind",
-        "tags",
-        "content",
-        "sig"
-      ];
+      const fields = ["id", "pubkey", "created_at", "kind", "tags", "content", "sig"];
 
       inspectorResult.innerHTML = `
-        <section class="detail-section">
-          <h3>This is</h3>
-
+        <div class="detail-section">
+          <h3>Event kind</h3>
           <p class="beginner-copy">
-            <strong>Kind ${escapeHtml(event.kind)} · ${escapeHtml(kindName)}</strong><br>
-            ${escapeHtml(
-              item?.explanation ||
-              "This event kind is not currently documented in the loaded registry."
-            )}
+            <strong>${escapeHtml(event.kind)}</strong>
+            — ${escapeHtml(item ? buildKindExplanation(item) : "Unknown kind")}
           </p>
-        </section>
+        </div>
 
-        <section class="detail-section">
-          <h3>Event structure</h3>
-
+        <div class="detail-section">
+          <h3>Fields</h3>
           <div class="field-tree">
             ${fields.map(field => {
               const exists = Object.prototype.hasOwnProperty.call(event, field);
-
-              let value = "missing";
-
-              if (exists) {
-                value = typeof event[field] === "string"
-                  ? event[field].slice(0, 150)
-                  : JSON.stringify(event[field]);
-              }
+              const raw = exists ? event[field] : "missing";
+              const value = typeof raw === "string"
+                ? raw.slice(0, 160)
+                : JSON.stringify(raw);
 
               return `
                 <div class="field">
                   <div class="field-name">${field}</div>
-
                   <div class="field-explanation">
                     ${escapeHtml(FIELD_EXPLANATIONS[field])}
                     <br>
@@ -2132,445 +1718,804 @@
               `;
             }).join("")}
           </div>
-        </section>
+        </div>
 
-        <section class="detail-section">
-          <h3>Recognized tags</h3>
-
-          <div class="tag-list">
-            ${renderInspectorTags(event.tags, item)}
-          </div>
-        </section>
-
-        <section class="detail-section">
+        <div class="detail-section">
           <h3>Raw event</h3>
           <pre>${escapeHtml(JSON.stringify(event, null, 2))}</pre>
-        </section>
+        </div>
       `;
 
       inspectorResult.classList.add("visible");
     }
 
-    function renderInspectorTags(tags, item) {
-      if (!Array.isArray(tags) || !tags.length) {
-        return `<span class="tag-chip">No tags found.</span>`;
-      }
-
-      return tags.map(tag => {
-        const name = Array.isArray(tag) ? tag[0] : "";
-        const value = Array.isArray(tag) ? tag.slice(1).join(" · ") : "";
-
-        const explanation = item?.fields?.[name] || tagExplanation(name);
-
-        return `
-          <div class="tag-chip">
-            <strong>${escapeHtml(name || "?")}</strong>
-            <span>
-              ${escapeHtml(value || "empty")} —
-              ${escapeHtml(explanation)}
-            </span>
-          </div>
-        `;
-      }).join("");
+    function openLinkExtractor() {
+      lastFocusedElement = document.activeElement;
+      showOverlay(linkOverlay);
+      linkInput.focus();
     }
 
-    function loadExampleEvent() {
-      const item = getKind(1) || KIND_DATA[0];
+    function closeLinkExtractor() {
+      hideOverlay(linkOverlay);
+      linkMessage.textContent = "";
+      linkResult.classList.remove("visible");
 
-      eventInput.value = JSON.stringify(exampleEvent(item), null, 2);
-      explainEvent();
-    }
-
-    function isHexEventId(value) {
-      return /^[a-fA-F0-9]{64}$/.test(value);
-    }
-
-    function extractFromUrl(value) {
-      let decoded;
-
-      try {
-        decoded = decodeURIComponent(value);
-      } catch {
-        decoded = value;
+      if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
+        lastFocusedElement.focus();
       }
-
-      const bchMatch = decoded.match(
-        /bchnostr\.com\/note\/([a-fA-F0-9]{64})(?:[/?#].*)?$/i
-      );
-
-      if (bchMatch) {
-        return {
-          id: bchMatch[1].toLowerCase(),
-          source: "BCH Nostr note link"
-        };
-      }
-
-      const genericMatch = decoded.match(
-        /\/note\/([a-fA-F0-9]{64})(?:[/?#].*)?$/i
-      );
-
-      if (genericMatch) {
-        return {
-          id: genericMatch[1].toLowerCase(),
-          source: "Nostr note link"
-        };
-      }
-
-      return null;
     }
 
     function extractEventId(input) {
-      const value = String(input || "").trim();
+      const text = String(input || "").trim();
 
-      if (!value) {
-        return {
-          error: "Paste a note link, event identifier, NIP-19 entity, or event JSON."
-        };
+      if (!text) {
+        throw new Error("Paste a BCH Nostr link, event ID, or event JSON.");
       }
-
-      let parsedJson = null;
 
       try {
-        parsedJson = JSON.parse(value);
-      } catch {
-        parsedJson = null;
-      }
+        const parsed = JSON.parse(text);
 
-      if (
-        parsedJson &&
-        typeof parsedJson === "object" &&
-        !Array.isArray(parsedJson)
-      ) {
-        if (isHexEventId(parsedJson.id)) {
-          return {
-            id: parsedJson.id.toLowerCase(),
-            source: "event JSON",
-            event: parsedJson
-          };
+        if (parsed && validHexId(parsed.id)) {
+          return parsed.id.toLowerCase();
         }
 
-        return {
-          error: "This JSON object does not contain a valid event id."
-        };
-      }
-
-      if (isHexEventId(value)) {
-        return {
-          id: value.toLowerCase(),
-          source: "raw hexadecimal event ID"
-        };
-      }
-
-      const urlResult = extractFromUrl(value);
-
-      if (urlResult) return urlResult;
-
-      return {
-        error:
-          "No supported event ID found. Try a BCH Nostr note link or a 64-character hexadecimal event ID."
-      };
-    }
-
-    function showExtractedEvent(result) {
-      linkMessage.textContent = "";
-      linkResult.classList.remove("visible");
-      linkResult.innerHTML = "";
-
-      if (!result.id) {
-        linkMessage.textContent = result.error || "No event ID found.";
-        return;
-      }
-
-      const eventKind = result.event && Number.isInteger(result.event.kind)
-        ? getKind(result.event.kind)
-        : null;
-
-      linkResult.innerHTML = `
-        <section class="detail-section">
-          <h3>Extracted event ID</h3>
-
-          <code class="extracted-id">
-            ${escapeHtml(result.id)}
-          </code>
-
-          <p class="hint">
-            Source: ${escapeHtml(result.source)}
-          </p>
-        </section>
-
-        ${
-          result.event
-            ? `
-              <section class="detail-section">
-                <h3>Event detected</h3>
-
-                <div class="extracted-kind">
-                  <div>
-                    <strong>
-                      Kind ${escapeHtml(result.event.kind ?? "unknown")}
-                    </strong>
-
-                    <span>
-                      ${escapeHtml(eventKind?.name || "Unknown kind")}
-                    </span>
-                  </div>
-
-                  <button
-                    id="inspectExtractedEvent"
-                    class="button primary"
-                    type="button"
-                  >Explain event</button>
-                </div>
-              </section>
-            `
-            : `
-              <section class="detail-section">
-                <h3>Identifier found</h3>
-
-                <p class="beginner-copy">
-                  The ID was extracted successfully. The complete event can be loaded
-                  from the default BCH Nostr relay below.
-                </p>
-              </section>
-            `
+        if (parsed && parsed.event && validHexId(parsed.event.id)) {
+          return parsed.event.id.toLowerCase();
         }
-
-        <section class="detail-section">
-          <h3>Fetch from relay</h3>
-
-          <div class="relay-box">
-            <input
-              id="relayUrl"
-              class="relay-input"
-              value="${escapeHtml(DEFAULT_RELAY)}"
-              placeholder="wss://relay.example"
-              aria-label="Relay WebSocket URL"
-            >
-
-            <button
-              id="fetchFromRelay"
-              class="button success"
-              type="button"
-            >Fetch event</button>
-          </div>
-
-          <div id="relayMessage" class="inspector-message"></div>
-        </section>
-      `;
-
-      linkResult.classList.add("visible");
-
-      document.getElementById("inspectExtractedEvent")
-        ?.addEventListener("click", () => {
-          eventInput.value = JSON.stringify(result.event, null, 2);
-          closeLinkExtractor();
-          openInspector();
-          explainEvent();
-        });
-
-      document.getElementById("fetchFromRelay")
-        ?.addEventListener("click", () => {
-          fetchEventFromRelay(
-            result.id,
-            document.getElementById("relayUrl").value
-          );
-        });
-    }
-
-    function loadBchExample() {
-      linkInput.value =
-        "https://bchnostr.com/note/dd2442077d7810ea4691b448d6c8cef23734a9c585300b1ac890c60d00d9e78d";
-
-      showExtractedEvent(extractEventId(linkInput.value));
-    }
-
-    function fetchEventFromRelay(eventId, relayUrl) {
-      const relayMessage = document.getElementById("relayMessage");
-      const cleanRelayUrl = String(relayUrl || "").trim();
-
-      if (!/^wss?:\/\//i.test(cleanRelayUrl)) {
-        relayMessage.textContent =
-          "Use a WebSocket relay URL beginning with wss:// or ws://.";
-        return;
-      }
-
-      relayMessage.textContent = "Connecting to relay…";
-
-      let socket;
-
-      try {
-        socket = new WebSocket(cleanRelayUrl);
       } catch {
-        relayMessage.textContent =
-          "That relay URL is not a valid WebSocket URL.";
-        return;
+        // Input is not JSON; continue with link parsing.
       }
 
-      const requestId = `atlas-${Date.now()}`;
-      let received = false;
+      const direct = text.match(/\b[a-f0-9]{64}\b/i);
+      if (direct) return direct[0].toLowerCase();
 
-      const timeout = setTimeout(() => {
-        relayMessage.textContent =
-          "The relay did not respond in time.";
-        socket.close();
-      }, 10000);
+      const noteMatch = text.match(
+        /(?:note|event|nevent)[/:]([a-f0-9]{64})/i
+      );
 
-      socket.addEventListener("open", () => {
-        socket.send(JSON.stringify([
-          "REQ",
-          requestId,
-          {
-            ids: [eventId],
-            limit: 1
-          }
-        ]));
-      });
+      if (noteMatch) return noteMatch[1].toLowerCase();
 
-      socket.addEventListener("message", event => {
-        let message;
+      throw new Error(
+        "Could not find a 64-character event ID in that input."
+      );
+    }
+
+    function openTopology() {
+      lastFocusedElement = document.activeElement;
+      topologyInput.value = linkInput.value || "";
+      showOverlay(topologyOverlay);
+      topologyInput.focus();
+    }
+
+    function closeTopology() {
+      hideOverlay(topologyOverlay);
+      topologyMessage.textContent = "";
+
+      if (lastFocusedElement && document.body.contains(lastFocusedElement)) {
+        lastFocusedElement.focus();
+      }
+    }
+
+    function relayRequest(relayUrl, filters, timeout = 15000) {
+      return new Promise((resolve, reject) => {
+        let socket;
+        let settled = false;
+        const events = new Map();
+        const subId = `atlas_${Math.random().toString(36).slice(2)}`;
+
+        const finish = (error, result) => {
+          if (settled) return;
+          settled = true;
+
+          try {
+            socket?.close();
+          } catch {}
+
+          if (error) reject(error);
+          else resolve(result);
+        };
+
+        const timer = setTimeout(() => {
+          finish(null, [...events.values()]);
+        }, timeout);
 
         try {
-          message = JSON.parse(event.data);
-        } catch {
+          socket = new WebSocket(relayUrl);
+        } catch (error) {
+          clearTimeout(timer);
+          finish(error);
           return;
         }
 
-        if (message[0] === "EVENT" && message[2]) {
-          received = true;
-          clearTimeout(timeout);
+        socket.addEventListener("open", () => {
+          socket.send(JSON.stringify([
+            "REQ",
+            subId,
+            ...filters
+          ]));
+        });
 
-          const receivedEvent = message[2];
+        socket.addEventListener("message", message => {
+          let data;
 
-          relayMessage.textContent =
-            `Event received from ${cleanRelayUrl}.`;
+          try {
+            data = JSON.parse(message.data);
+          } catch {
+            return;
+          }
 
-          eventInput.value = JSON.stringify(receivedEvent, null, 2);
+          if (data[0] === "EVENT" && data[2]?.id) {
+            events.set(data[2].id, data[2]);
+          }
 
-          showExtractedEvent({
-            id: receivedEvent.id || eventId,
-            source: `relay ${cleanRelayUrl}`,
-            event: receivedEvent
-          });
+          if (data[0] === "EOSE") {
+            clearTimeout(timer);
+            finish(null, [...events.values()]);
+          }
 
-          socket.send(JSON.stringify(["CLOSE", requestId]));
-          socket.close();
-        }
+          if (data[0] === "NOTICE") {
+            clearTimeout(timer);
+            finish(new Error(data[1] || "Relay notice"));
+          }
 
-        if (message[0] === "EOSE" && !received) {
-          clearTimeout(timeout);
+          if (data[0] === "CLOSED") {
+            clearTimeout(timer);
+            finish(new Error(data[2] || "Relay closed request"));
+          }
+        });
 
-          relayMessage.textContent =
-            "The relay returned no event for this ID.";
-
-          socket.send(JSON.stringify(["CLOSE", requestId]));
-          socket.close();
-        }
-
-        if (message[0] === "NOTICE") {
-          relayMessage.textContent =
-            `Relay notice: ${message[1] || "request rejected"}`;
-        }
-
-        if (message[0] === "CLOSED") {
-          clearTimeout(timeout);
-          relayMessage.textContent =
-            `Relay closed the request: ${message[2] || "unknown reason"}`;
-        }
-      });
-
-      socket.addEventListener("error", () => {
-        clearTimeout(timeout);
-
-        relayMessage.textContent =
-          "Could not connect to that relay. It may be unavailable or blocked by the browser.";
-      });
-
-      socket.addEventListener("close", () => {
-        clearTimeout(timeout);
+        socket.addEventListener("error", () => {
+          clearTimeout(timer);
+          finish(new Error("Unable to connect to relay."));
+        });
       });
     }
 
-    function showOverlay(overlay) {
-      overlay.classList.add("open");
-      overlay.setAttribute("aria-hidden", "false");
-      document.body.classList.add("locked");
+    async function fetchSingleEvent(relayUrl, id) {
+      const events = await relayRequest(relayUrl, [
+        {
+          ids: [id],
+          limit: 1
+        }
+      ]);
+
+      return events[0] || null;
     }
 
-    function hideOverlay(overlay) {
-      overlay.classList.remove("open");
-      overlay.setAttribute("aria-hidden", "true");
+    function eventReferencesTarget(event, targetId) {
+      return (event.tags || []).some(tag =>
+        ["e", "q"].includes(tag[0]) && tag[1] === targetId
+      );
+    }
 
-      if (
-        !detailOverlay.classList.contains("open") &&
-        !inspectorOverlay.classList.contains("open") &&
-        !linkOverlay.classList.contains("open")
-      ) {
-        document.body.classList.remove("locked");
+    function reactionLabel(content) {
+      const value = String(content || "").trim();
+
+      if (!value || value === "+" || value === "♥" || value === "❤") {
+        return "Like";
+      }
+
+      if (value === "-") return "Dislike";
+      if (/❤️|❤|♥/.test(value)) return "Heart";
+      if (/🔥/.test(value)) return "Fire";
+      if (/😂|🤣/.test(value)) return "Laugh";
+      if (/😢|😭/.test(value)) return "Sad";
+
+      return value.length > 16
+        ? `${value.slice(0, 16)}…`
+        : value;
+    }
+
+    function classifyInteraction(event, targetId) {
+      if (!eventReferencesTarget(event, targetId)) {
+        return null;
+      }
+
+      if (event.kind === 7) {
+        return {
+          type: "reaction",
+          label: reactionLabel(event.content),
+          color: TOPOLOGY_COLORS.reaction
+        };
+      }
+
+      if (event.kind === 6) {
+        return {
+          type: "repost",
+          label: "Repost",
+          color: TOPOLOGY_COLORS.repost
+        };
+      }
+
+      if (event.kind === 9735) {
+        return {
+          type: "zap",
+          label: "Zap",
+          color: TOPOLOGY_COLORS.zap
+        };
+      }
+
+      if (event.kind === 1111) {
+        return {
+          type: "comment",
+          label: "Comment",
+          color: TOPOLOGY_COLORS.comment
+        };
+      }
+
+      if (event.kind === 1) {
+        const hasReplyMarker = (event.tags || [])
+          .some(tag => tag[0] === "e" && tag[1] === targetId);
+
+        return {
+          type: hasReplyMarker ? "comment" : "quote",
+          label: hasReplyMarker ? "Reply" : "Quote",
+          color: hasReplyMarker
+            ? TOPOLOGY_COLORS.comment
+            : TOPOLOGY_COLORS.quote
+        };
+      }
+
+      return {
+        type: "unknown",
+        label: `Kind ${event.kind}`,
+        color: TOPOLOGY_COLORS.unknown
+      };
+    }
+
+    function parseProfile(event) {
+      const fallback = {
+        name: shortKey(event.pubkey || "unknown"),
+        display_name: shortKey(event.pubkey || "unknown"),
+        picture: "",
+        about: "",
+        nip05: ""
+      };
+
+      if (!event) return fallback;
+
+      try {
+        const metadata = JSON.parse(event.content || "{}");
+
+        return {
+          ...fallback,
+          ...metadata,
+          name: metadata.display_name ||
+            metadata.name ||
+            fallback.name,
+          display_name: metadata.display_name ||
+            metadata.name ||
+            fallback.display_name
+        };
+      } catch {
+        return fallback;
       }
     }
 
-    function closeOpenLayer() {
-      if (inspectorOverlay.classList.contains("open")) {
-        closeInspector();
-      } else if (linkOverlay.classList.contains("open")) {
-        closeLinkExtractor();
-      } else if (detailOverlay.classList.contains("open")) {
-        closeDetail();
+    function profilePicture(profile, pubkey) {
+      if (profile.picture && /^https?:\/\//i.test(profile.picture)) {
+        return profile.picture;
       }
+
+      const seed = encodeURIComponent(pubkey || "nostr");
+      return `https://api.dicebear.com/9.x/identicon/svg?seed=${seed}`;
     }
 
-    function openInitialKind() {
-      const match = window.location.hash.match(/^#kind\/(\d+)$/);
+    async function buildTopology(input, relayUrl) {
+      const eventId = extractEventId(input);
 
-      if (match) {
-        openKind(Number(match[1]), false);
+      if (!/^wss?:\/\//i.test(relayUrl)) {
+        throw new Error("Relay must begin with ws:// or wss://.");
       }
-    }
 
-    document.getElementById("openInspector")
-      .addEventListener("click", openInspector);
+      topologyMessage.textContent = "Fetching original event…";
+      const rootEvent = await fetchSingleEvent(relayUrl, eventId);
 
-    document.getElementById("openLinkExtractor")
-      .addEventListener("click", openLinkExtractor);
+      if (!rootEvent) {
+        throw new Error("The original event was not found on this relay.");
+      }
 
-    document.getElementById("explainEvent")
-      .addEventListener("click", explainEvent);
+      topologyMessage.textContent = "Searching replies, reactions, reposts, and zaps…";
 
-    document.getElementById("loadExample")
-      .addEventListener("click", loadExampleEvent);
+      const interactionFilters = [
+        {
+          kinds: [1, 6, 7, 1111, 9735],
+          "#e": [eventId],
+          limit: 500
+        },
+        {
+          kinds: [1, 6, 7, 1111, 9735],
+          "#q": [eventId],
+          limit: 500
+        }
+      ];
 
-    document.getElementById("extractEventId")
-      .addEventListener("click", () => {
-        showExtractedEvent(extractEventId(linkInput.value));
+      const interactions = await relayRequest(
+        relayUrl,
+        interactionFilters,
+        20000
+      );
+
+      const classified = interactions
+        .map(event => ({
+          event,
+          interaction: classifyInteraction(event, eventId)
+        }))
+        .filter(item => item.interaction && event.pubkey !== rootEvent.pubkey);
+
+      const authors = [
+        ...new Set([
+          rootEvent.pubkey,
+          ...classified.map(item => item.event.pubkey)
+        ])
+      ];
+
+      topologyMessage.textContent = `Loading ${authors.length} profile metadata record${authors.length === 1 ? "" : "s"}…`;
+
+      const profiles = new Map();
+
+      for (const pubkey of authors) {
+        try {
+          const profileEvents = await relayRequest(relayUrl, [
+            {
+              kinds: [0],
+              authors: [pubkey],
+              limit: 1
+            }
+          ], 8000);
+
+          profiles.set(pubkey, parseProfile(profileEvents[0]));
+        } catch {
+          profiles.set(pubkey, parseProfile({ pubkey }));
+        }
+      }
+
+      const accountMap = new Map();
+
+      authors.forEach(pubkey => {
+        const isRoot = pubkey === rootEvent.pubkey;
+
+        accountMap.set(pubkey, {
+          pubkey,
+          profile: profiles.get(pubkey) || parseProfile({ pubkey }),
+          isRoot,
+          activities: [],
+          eventCount: 0
+        });
       });
 
-    document.getElementById("loadBchExample")
-      .addEventListener("click", loadBchExample);
+      classified.forEach(({ event, interaction }) => {
+        const account = accountMap.get(event.pubkey);
+        if (!account) return;
 
-    document.querySelector("[data-close='inspector']")
-      .addEventListener("click", closeInspector);
+        account.activities.push({
+          ...interaction,
+          eventId: event.id,
+          createdAt: event.created_at,
+          content: event.content || "",
+          event
+        });
 
-    document.querySelector("[data-close='link']")
-      .addEventListener("click", closeLinkExtractor);
+        account.eventCount += 1;
+      });
 
-    detailOverlay.addEventListener("click", event => {
-      if (event.target === detailOverlay) closeDetail();
-    });
+      return {
+        eventId,
+        rootEvent,
+        accounts: [...accountMap.values()],
+        interactions: classified
+      };
+    }
 
-    inspectorOverlay.addEventListener("click", event => {
-      if (event.target === inspectorOverlay) closeInspector();
-    });
+    function renderTopology(data) {
+      topologyData = data;
 
-    linkOverlay.addEventListener("click", event => {
-      if (event.target === linkOverlay) closeLinkExtractor();
-    });
+      const interactingAccounts = data.accounts.filter(account => !account.isRoot);
+      const activityCounts = {};
 
-    linkInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        showExtractedEvent(extractEventId(linkInput.value));
+      data.interactions.forEach(({ interaction }) => {
+        activityCounts[interaction.type] =
+          (activityCounts[interaction.type] || 0) + 1;
+      });
+
+      topologyStats.innerHTML = `
+        <div class="stat">
+          <strong>${data.accounts.length}</strong>
+          <span>Accounts</span>
+        </div>
+        <div class="stat">
+          <strong>${data.interactions.length}</strong>
+          <span>Interactions</span>
+        </div>
+        <div class="stat">
+          <strong>${activityCounts.comment || 0}</strong>
+          <span>Comments</span>
+        </div>
+        <div class="stat">
+          <strong>${activityCounts.reaction || 0}</strong>
+          <span>Reactions</span>
+        </div>
+        <div class="stat">
+          <strong>${activityCounts.repost || 0}</strong>
+          <span>Reshares</span>
+        </div>
+        <div class="stat">
+          <strong>${activityCounts.zap || 0}</strong>
+          <span>Zaps</span>
+        </div>
+      `;
+
+      topologyLegend.innerHTML = `
+        ${[
+          ["post", "Original post"],
+          ["comment", "Comments / replies"],
+          ["reaction", "Reactions"],
+          ["repost", "Reshares"],
+          ["zap", "Zaps"],
+          ["quote", "Quotes"]
+        ].map(([type, label]) => `
+          <span class="legend-item">
+            <span
+              class="legend-dot"
+              style="color:${TOPOLOGY_COLORS[type]};background:${TOPOLOGY_COLORS[type]}">
+            </span>
+            ${label}
+          </span>
+        `).join("")}
+      `;
+
+      const width = Math.max(topologyGraph.clientWidth, 620);
+      const height = Math.max(topologyGraph.clientHeight, 520);
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      const root = data.accounts.find(account => account.isRoot);
+      const people = data.accounts.filter(account => !account.isRoot);
+
+      topologyGraph.innerHTML = `
+        <svg
+          class="topology-svg"
+          viewBox="0 0 ${width} ${height}"
+          role="img"
+          aria-label="Cyberpunk Nostr interaction topology">
+          <defs>
+            <filter id="topologyGlow" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="3" result="blur"></feGaussianBlur>
+              <feMerge>
+                <feMergeNode in="blur"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+              </feMerge>
+            </filter>
+
+            <radialGradient id="rootGradient">
+              <stop offset="0%" stop-color="#ffb099"></stop>
+              <stop offset="65%" stop-color="#ff825c"></stop>
+              <stop offset="100%" stop-color="#8a2e3c"></stop>
+            </radialGradient>
+
+            <radialGradient id="userGradient">
+              <stop offset="0%" stop-color="#d6c7ff"></stop>
+              <stop offset="70%" stop-color="#b894ff"></stop>
+              <stop offset="100%" stop-color="#382368"></stop>
+            </radialGradient>
+          </defs>
+
+          <g class="topology-edges"></g>
+          <g class="topology-nodes"></g>
+        </svg>
+      `;
+
+      const svg = topologyGraph.querySelector("svg");
+      const edgeGroup = svg.querySelector(".topology-edges");
+      const nodeGroup = svg.querySelector(".topology-nodes");
+
+      const rootPosition = {
+        x: centerX,
+        y: centerY
+      };
+
+      const peoplePositions = people.map((account, index) => ({
+        account,
+        ...ringPosition(
+          index,
+          people.length,
+          Math.min(width, height) * .34,
+          centerX,
+          centerY
+        )
+      }));
+
+      const positions = new Map([
+        [root.pubkey, rootPosition],
+        ...peoplePositions.map(item => [item.account.pubkey, item])
+      ]);
+
+      data.interactions.forEach(({ event, interaction }) => {
+        const target = positions.get(event.pubkey);
+        if (!target) return;
+
+        const x2 = target.x;
+        const y2 = target.y;
+
+        edgeGroup.insertAdjacentHTML("beforeend", `
+          <line
+            class="topology-edge"
+            x1="${centerX}"
+            y1="${centerY}"
+            x2="${x2}"
+            y2="${y2}"
+            stroke="${interaction.color}"
+            opacity=".68">
+          </line>
+        `);
+      });
+
+      peoplePositions.forEach(({ account, x, y }) => {
+        const activityText = [...new Set(
+          account.activities.map(activity => activity.label)
+        )].slice(0, 2).join(" · ");
+
+        const image = profilePicture(account.profile, account.pubkey);
+        const imageId = `avatar-${account.pubkey.slice(0, 12)}`;
+
+        svg.querySelector("defs").insertAdjacentHTML("beforeend", `
+          <clipPath id="${imageId}">
+            <circle cx="${x}" cy="${y}" r="25"></circle>
+          </clipPath>
+        `);
+
+        nodeGroup.insertAdjacentHTML("beforeend", `
+          <g
+            class="topology-node"
+            data-pubkey="${escapeHtml(account.pubkey)}"
+            tabindex="0"
+            role="button"
+            aria-label="${escapeHtml(account.profile.display_name)}">
+
+            <circle
+              cx="${x}"
+              cy="${y}"
+              r="33"
+              fill="rgba(184,148,255,.08)"
+              stroke="${TOPOLOGY_COLORS.comment}"
+              stroke-width="1.5">
+            </circle>
+
+            <image
+              class="node-image"
+              href="${escapeHtml(image)}"
+              x="${x - 25}"
+              y="${y - 25}"
+              width="50"
+              height="50"
+              preserveAspectRatio="xMidYMid slice"
+              clip-path="url(#${imageId})">
+            </image>
+
+            <circle
+              cx="${x}"
+              cy="${y}"
+              r="25"
+              fill="none"
+              stroke="${TOPOLOGY_COLORS.comment}"
+              stroke-width="1.5">
+            </circle>
+
+            <text
+              class="node-name"
+              x="${x}"
+              y="${y + 50}">
+              ${escapeHtml((account.profile.display_name || "Unknown").slice(0, 21))}
+            </text>
+
+            <text
+              class="node-activity"
+              x="${x}"
+              y="${y + 64}">
+              ${escapeHtml(activityText || "Interaction")}
+            </text>
+          </g>
+        `);
+      });
+
+      if (root) {
+        const rootImage = profilePicture(root.profile, root.pubkey);
+        const rootImageId = "root-avatar";
+
+        svg.querySelector("defs").insertAdjacentHTML("beforeend", `
+          <clipPath id="${rootImageId}">
+            <circle cx="${centerX}" cy="${centerY}" r="39"></circle>
+          </clipPath>
+        `);
+
+        nodeGroup.insertAdjacentHTML("beforeend", `
+          <g
+            class="topology-node selected"
+            data-pubkey="${escapeHtml(root.pubkey)}"
+            tabindex="0"
+            role="button"
+            aria-label="Original post">
+
+            <circle
+              cx="${centerX}"
+              cy="${centerY}"
+              r="55"
+              fill="rgba(255,130,92,.1)"
+              stroke="${TOPOLOGY_COLORS.post}"
+              stroke-width="2">
+            </circle>
+
+            <image
+              class="node-image"
+              href="${escapeHtml(rootImage)}"
+              x="${centerX - 39}"
+              y="${centerY - 39}"
+              width="78"
+              height="78"
+              preserveAspectRatio="xMidYMid slice"
+              clip-path="url(#${rootImageId})">
+            </image>
+
+            <circle
+              cx="${centerX}"
+              cy="${centerY}"
+              r="39"
+              fill="none"
+              stroke="${TOPOLOGY_COLORS.post}"
+              stroke-width="2">
+            </circle>
+
+            <text
+              class="node-name"
+              x="${centerX}"
+              y="${centerY + 76}">
+              ORIGINAL POST
+            </text>
+
+            <text
+              class="node-activity"
+              x="${centerX}"
+              y="${centerY + 91}">
+              ${escapeHtml(root.profile.display_name || shortKey(root.pubkey))}
+            </text>
+          </g>
+        `);
       }
-    });
+
+      topologyGraph.querySelectorAll(".topology-node").forEach(node => {
+        const select = () => {
+          topologyGraph.querySelectorAll(".topology-node")
+            .forEach(item => item.classList.remove("selected"));
+
+          node.classList.add("selected");
+          showTopologyAccount(node.dataset.pubkey);
+        };
+
+        node.addEventListener("click", select);
+        node.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            select();
+          }
+        });
+      });
+
+      showTopologyAccount(root.pubkey);
+    }
+
+    function ringPosition(index, total, radius, centerX, centerY) {
+      const angle = (Math.PI * 2 * index) / Math.max(total, 1) - Math.PI / 2;
+
+      return {
+        x: centerX + Math.cos(angle) * radius,
+        y: centerY + Math.sin(angle) * radius
+      };
+    }
+
+    function showTopologyAccount(pubkey) {
+      const account = topologyData?.accounts.find(
+        item => item.pubkey === pubkey
+      );
+
+      if (!account) return;
+
+      const profile = account.profile;
+      const avatar = profilePicture(profile, pubkey);
+
+      topologyDetails.innerHTML = `
+        <div class="profile-card">
+          <div class="profile-head">
+            <img
+              class="profile-avatar"
+              src="${escapeHtml(avatar)}"
+              alt="">
+            <div>
+              <div class="profile-name">
+                ${escapeHtml(profile.display_name || shortKey(pubkey))}
+              </div>
+              <div class="profile-key">${escapeHtml(shortKey(pubkey, 13))}</div>
+            </div>
+          </div>
+
+          ${profile.nip05 ? `
+            <div class="profile-key">${escapeHtml(profile.nip05)}</div>
+          ` : ""}
+
+          ${profile.about ? `
+            <div class="profile-about">${escapeHtml(profile.about.slice(0, 260))}</div>
+          ` : ""}
+
+          <div>
+            <div class="sheet-label">ACTIVITY</div>
+            <div class="activity-list">
+              ${account.isRoot
+                ? `<div class="activity-item">
+                    <span class="activity-kind">Original post</span>
+                    <span class="activity-date">root</span>
+                   </div>`
+                : account.activities.map(activity => `
+                  <div class="activity-item">
+                    <span class="activity-kind"
+                      style="color:${activity.color}">
+                      ${escapeHtml(activity.label)}
+                    </span>
+                    <span class="activity-date">
+                      ${formatDate(activity.createdAt)}
+                    </span>
+                  </div>
+                `).join("")}
+            </div>
+          </div>
+
+          <a
+            class="button"
+            href="https://njump.me/p/${encodeURIComponent(pubkey)}"
+            target="_blank"
+            rel="noopener">
+            View public profile
+          </a>
+        </div>
+      `;
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return "unknown";
+
+      const date = new Date(Number(timestamp) * 1000);
+      if (Number.isNaN(date.getTime())) return "unknown";
+
+      return date.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    async function analyzeTopology() {
+      topologyMessage.style.color = "var(--muted)";
+      topologyMessage.textContent = "";
+      topologyStats.innerHTML = "";
+
+      try {
+        const input = topologyInput.value.trim();
+        const relay = topologyRelay.value.trim();
+
+        if (!input) {
+          throw new Error("Paste a BCH Nostr post link or event ID.");
+        }
+
+        const data = await buildTopology(input, relay);
+        renderTopology(data);
+
+        topologyMessage.style.color = "var(--green)";
+        topologyMessage.textContent =
+          `Topology loaded from ${relay}.`;
+      } catch (error) {
+        topologyMessage.style.color = "var(--danger)";
+        topologyMessage.textContent =
+          error.message || "Unable to analyze this post.";
+      }
+    }
 
     search.addEventListener("input", () => {
       renderUniverse(search.value);
@@ -2579,45 +2524,114 @@
 
     clearSearch.addEventListener("click", () => {
       search.value = "";
-      renderUniverse();
+      renderUniverse("");
       clearSearch.classList.remove("visible");
       search.focus();
     });
 
+    $("openInspector").addEventListener("click", openInspector);
+    $("openLinkExtractor").addEventListener("click", openLinkExtractor);
+    $("openTopology").addEventListener("click", openTopology);
+
+    $("explainEvent").addEventListener("click", explainEvent);
+
+    $("loadExample").addEventListener("click", () => {
+      eventInput.value = JSON.stringify({
+        id: "example-event-id",
+        pubkey: "example-author-pubkey",
+        created_at: 1770000000,
+        kind: 1,
+        tags: [],
+        content: "Hello Nostr!",
+        sig: "example-signature"
+      }, null, 2);
+    });
+
+    $("extractEventId").addEventListener("click", () => {
+      linkMessage.textContent = "";
+      linkResult.classList.remove("visible");
+
+      try {
+        const id = extractEventId(linkInput.value);
+
+        linkResult.innerHTML = `
+          <div class="detail-section">
+            <h3>Extracted event ID</h3>
+            <pre>${escapeHtml(id)}</pre>
+          </div>
+
+          <div class="sheet-actions">
+            <button id="analyzeExtractedTopology"
+              class="button success"
+              type="button">
+              Map this post
+            </button>
+          </div>
+        `;
+
+        linkResult.classList.add("visible");
+
+        $("analyzeExtractedTopology").addEventListener("click", () => {
+          closeLinkExtractor();
+          topologyInput.value = id;
+          openTopology();
+        });
+      } catch (error) {
+        linkMessage.textContent = error.message;
+      }
+    });
+
+    $("loadBchExample").addEventListener("click", () => {
+      linkInput.value = "https://bchnostr.com/note/0000000000000000000000000000000000000000000000000000000000000000";
+    });
+
+    $("analyzeTopology").addEventListener("click", analyzeTopology);
+
+    document.querySelector("[data-close-inspector]")
+      .addEventListener("click", closeInspector);
+
+    document.querySelector("[data-close-link]")
+      .addEventListener("click", closeLinkExtractor);
+
+    document.querySelector("[data-close-topology]")
+      .addEventListener("click", closeTopology);
+
+    [detailOverlay, inspectorOverlay, linkOverlay, topologyOverlay]
+      .forEach(overlay => {
+        overlay.addEventListener("click", event => {
+          if (event.target === overlay) {
+            if (overlay === detailOverlay) closeDetail();
+            if (overlay === inspectorOverlay) closeInspector();
+            if (overlay === linkOverlay) closeLinkExtractor();
+            if (overlay === topologyOverlay) closeTopology();
+          }
+        });
+      });
+
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") {
-        closeOpenLayer();
+        if (topologyOverlay.classList.contains("open")) closeTopology();
+        else if (linkOverlay.classList.contains("open")) closeLinkExtractor();
+        else if (inspectorOverlay.classList.contains("open")) closeInspector();
+        else if (detailOverlay.classList.contains("open")) closeDetail();
       }
 
       if (
         event.key === "/" &&
-        document.activeElement !== search &&
-        document.activeElement !== eventInput &&
-        document.activeElement !== linkInput
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
       ) {
         event.preventDefault();
         search.focus();
       }
     });
 
-    window.addEventListener("popstate", openInitialKind);
-    window.addEventListener("hashchange", openInitialKind);
-
-    setInterval(() => {
-      placeholderIndex =
-        (placeholderIndex + 1) % searchExamples.length;
-
-      if (
-        document.activeElement !== search &&
-        !search.value
-      ) {
-        search.placeholder =
-          `Try “${searchExamples[placeholderIndex]}”`;
+    window.addEventListener("resize", () => {
+      if (topologyData && topologyOverlay.classList.contains("open")) {
+        renderTopology(topologyData);
       }
-    }, 3000);
+    });
 
-    KIND_DATA = fallbackKinds();
-    renderUniverse();
     loadKinds();
   </script>
 </body>
