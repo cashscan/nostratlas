@@ -1425,7 +1425,7 @@
 
         <div class="hero-actions">
           <button id="openTopology" class="button primary" type="button">
-            Map Post Topology
+            Map Post or Profile
           </button>
 
           <button id="openInspector" class="button" type="button">
@@ -1503,14 +1503,15 @@
       <div class="page-title-row">
         <div>
           <p class="section-kicker">NETWORK VISUALIZER</p>
-          <h2 id="topologyTabTitle">Post topology</h2>
+          <h2 id="topologyTabTitle">Post and profile topology</h2>
           <p>
-            Map public accounts that reacted, commented, reposted, quoted, or zapped.
+            Use a post link to map interactions, or a profile link, npub,
+            or nprofile to inspect an account.
           </p>
         </div>
 
         <button id="topologyTabAction" class="button primary" type="button">
-          Analyze a post
+          Analyze input
         </button>
       </div>
 
@@ -1701,7 +1702,7 @@
       <div class="sheet-top">
         <div>
           <p class="sheet-label">INTERACTION TOPOLOGY</p>
-          <h2 id="topologyTitle">Post network</h2>
+          <h2 id="topologyTitle">Post or profile network</h2>
         </div>
 
         <button class="close" type="button" data-close-topology aria-label="Close">
@@ -1709,21 +1710,26 @@
         </button>
       </div>
 
+      <p class="beginner-copy">
+        Paste a post link to map its interactions, or paste a BCH profile link,
+        hexadecimal public key, npub, or nprofile to inspect an account.
+      </p>
+
       <div class="topology-controls">
         <label>
-          Event link or ID
+          Post, profile, npub, nprofile, or public key
 
           <input
             id="topologyInput"
-            class="inspector-input"
+            class="inspector-input single-input"
             type="text"
             autocomplete="off"
             spellcheck="false"
-            placeholder="https://bchnostr.com/note/...">
+            placeholder="https://bchnostr.com/profile/...">
         </label>
 
         <button id="analyzeTopology" class="button success" type="button">
-          Analyze network
+          Analyze input
         </button>
       </div>
 
@@ -1742,7 +1748,7 @@
           class="topology-graph"
           aria-label="Nostr interaction topology">
           <div style="padding:24px;color:#58637c;font-size:12px;">
-            Paste a public BCH Nostr post link and analyze the network.
+            Paste a public post or profile input and analyze the network.
           </div>
         </div>
 
@@ -1754,7 +1760,7 @@
       <div id="topologyLegend" class="topology-legend"></div>
 
       <p class="topology-note">
-        The graph shows publicly discoverable events returned by the enabled relays.
+        The graph shows publicly discoverable events returned by enabled relays.
         It cannot guarantee complete network-wide coverage.
       </p>
     </section>
@@ -1840,6 +1846,13 @@
       [30002, "Relay Sets", "Categorized relay groups", "NIP-51"],
       [30078, "Arbitrary Custom App Data", "Application-specific data storage", "NIP-78"]
     ];
+
+    const BECH32_CHARSET =
+      "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+
+    const BECH32_CHARKEY = Object.fromEntries(
+      [...BECH32_CHARSET].map((char, index) => [char, index])
+    );
 
     let KIND_DATA = [];
     let relayConfig = [];
@@ -1995,17 +2008,13 @@
     function updateRelayLabels() {
       const relays = getEnabledRelays();
 
-      if (activeRelayLabel) {
-        activeRelayLabel.textContent = relays.length === 1
-          ? relays[0]
-          : `${relays.length} relays configured`;
-      }
+      activeRelayLabel.textContent = relays.length === 1
+        ? relays[0]
+        : `${relays.length} relays configured`;
 
-      if (topologyRelaySummary) {
-        topologyRelaySummary.textContent = relays.length === 1
-          ? relays[0]
-          : `${relays.length} enabled relays`;
-      }
+      topologyRelaySummary.textContent = relays.length === 1
+        ? relays[0]
+        : `${relays.length} enabled relays`;
     }
 
     function renderRelaySettings() {
@@ -2177,9 +2186,7 @@
       overlay.classList.remove("open");
       overlay.setAttribute("aria-hidden", "true");
 
-      const openOverlay = document.querySelector(".overlay.open");
-
-      if (!openOverlay) {
+      if (!document.querySelector(".overlay.open")) {
         document.body.classList.remove("locked");
       }
     }
@@ -2698,7 +2705,9 @@
       const text = String(input || "").trim();
 
       if (!text) {
-        throw new Error("Paste a BCH Nostr link, event ID, or event JSON.");
+        throw new Error(
+          "Paste a BCH Nostr link, event ID, or event JSON."
+        );
       }
 
       try {
@@ -2732,6 +2741,260 @@
       throw new Error(
         "Could not find a 64-character event ID in that input."
       );
+    }
+
+    function bech32Polymod(values) {
+      const generators = [
+        0x3b6a57b2,
+        0x26508e6d,
+        0x1ea119fa,
+        0x3d4233dd,
+        0x2a1462b3
+      ];
+
+      let chk = 1;
+
+      for (const value of values) {
+        const top = chk >>> 25;
+        chk = ((chk & 0x1ffffff) << 5) ^ value;
+
+        for (let bit = 0; bit < 5; bit++) {
+          if ((top >>> bit) & 1) {
+            chk ^= generators[bit];
+          }
+        }
+      }
+
+      return chk >>> 0;
+    }
+
+    function bech32HrpExpand(hrp) {
+      return [
+        ...[...hrp].map(char => char.charCodeAt(0) >>> 5),
+        0,
+        ...[...hrp].map(char => char.charCodeAt(0) & 31)
+      ];
+    }
+
+    function verifyBech32Checksum(hrp, data) {
+      return bech32Polymod([
+        ...bech32HrpExpand(hrp),
+        ...data
+      ]) === 1;
+    }
+
+    function convertBits(data, fromBits, toBits, pad = true) {
+      let accumulator = 0;
+      let bits = 0;
+      const result = [];
+      const maxValue = (1 << toBits) - 1;
+      const maxAccumulator = (1 << (fromBits + toBits - 1)) - 1;
+
+      for (const value of data) {
+        if (value < 0 || (value >> fromBits) !== 0) {
+          throw new Error("Invalid bech32 data.");
+        }
+
+        accumulator = (
+          ((accumulator << fromBits) | value) &
+          maxAccumulator
+        );
+
+        bits += fromBits;
+
+        while (bits >= toBits) {
+          bits -= toBits;
+          result.push((accumulator >> bits) & maxValue);
+        }
+      }
+
+      if (pad) {
+        if (bits > 0) {
+          result.push((accumulator << (toBits - bits)) & maxValue);
+        }
+      } else {
+        if (
+          bits >= fromBits ||
+          ((accumulator << (toBits - bits)) & maxValue)
+        ) {
+          throw new Error("Invalid bech32 padding.");
+        }
+      }
+
+      return result;
+    }
+
+    function decodeBech32(value) {
+      const normalized = String(value || "").trim().toLowerCase();
+
+      if (
+        normalized.length < 8 ||
+        normalized.length > 500 ||
+        !normalized.includes("1")
+      ) {
+        throw new Error("Invalid NIP-19 identifier.");
+      }
+
+      const separator = normalized.lastIndexOf("1");
+
+      if (separator < 1 || separator + 7 > normalized.length) {
+        throw new Error("Invalid NIP-19 identifier.");
+      }
+
+      const hrp = normalized.slice(0, separator);
+      const dataPart = normalized.slice(separator + 1);
+
+      const data = [...dataPart].map(char => {
+        if (!(char in BECH32_CHARKEY)) {
+          throw new Error("Invalid character in NIP-19 identifier.");
+        }
+
+        return BECH32_CHARKEY[char];
+      });
+
+      if (!verifyBech32Checksum(hrp, data)) {
+        throw new Error("Invalid NIP-19 checksum.");
+      }
+
+      return {
+        prefix: hrp,
+        words: data.slice(0, -6)
+      };
+    }
+
+    function bytesToHex(bytes) {
+      return bytes
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    function decodeNostrProfileIdentifier(identifier) {
+      const decoded = decodeBech32(identifier);
+
+      if (decoded.prefix === "npub") {
+        const bytes = convertBits(decoded.words, 5, 8, false);
+        const pubkey = bytesToHex(bytes);
+
+        if (!validHexId(pubkey)) {
+          throw new Error("The npub does not contain a valid public key.");
+        }
+
+        return pubkey.toLowerCase();
+      }
+
+      if (decoded.prefix === "nprofile") {
+        const payload = new Uint8Array(
+          convertBits(decoded.words, 5, 8, false)
+        );
+
+        let offset = 0;
+        let pubkey = "";
+
+        while (offset < payload.length) {
+          const type = payload[offset++];
+          const length = (
+            (payload[offset++] << 8) |
+            payload[offset++]
+          );
+
+          const value = payload.slice(offset, offset + length);
+          offset += length;
+
+          if (type === 0) {
+            pubkey = bytesToHex([...value]);
+            break;
+          }
+        }
+
+        if (!validHexId(pubkey)) {
+          throw new Error(
+            "The nprofile does not contain a valid public key."
+          );
+        }
+
+        return pubkey.toLowerCase();
+      }
+
+      throw new Error(
+        "Only npub and nprofile identifiers are supported for profiles."
+      );
+    }
+
+    function extractProfilePubkey(input) {
+      const text = String(input || "").trim();
+
+      if (!text) {
+        throw new Error(
+          "Paste a public key, npub, nprofile, or BCH profile link."
+        );
+      }
+
+      try {
+        const parsed = JSON.parse(text);
+
+        if (parsed && validHexId(parsed.pubkey)) {
+          return parsed.pubkey.toLowerCase();
+        }
+
+        if (parsed && parsed.profile && validHexId(parsed.profile.pubkey)) {
+          return parsed.profile.pubkey.toLowerCase();
+        }
+      } catch {
+        // Continue with URL and identifier parsing.
+      }
+
+      const profileUrlMatch = text.match(
+        /\/profile\/([a-f0-9]{64})(?:[/?#]|$)/i
+      );
+
+      if (profileUrlMatch) {
+        return profileUrlMatch[1].toLowerCase();
+      }
+
+      const directHex = text.match(/\b[a-f0-9]{64}\b/i);
+
+      if (directHex) {
+        return directHex[0].toLowerCase();
+      }
+
+      const nip19Token = text.match(
+        /\b(npub1[023456789acdefghjklmnpqrstuvwxyz]+|nprofile1[023456789acdefghjklmnpqrstuvwxyz]+)\b/i
+      );
+
+      if (nip19Token) {
+        return decodeNostrProfileIdentifier(nip19Token[1]);
+      }
+
+      throw new Error(
+        "Could not find a valid public key, npub, nprofile, or BCH profile link."
+      );
+    }
+
+    function extractAnalysisType(input) {
+      const text = String(input || "").trim();
+
+      if (
+        /\/profile\/[a-f0-9]{64}(?:[/?#]|$)/i.test(text) ||
+        /\b(?:npub1|nprofile1)/i.test(text)
+      ) {
+        return "profile";
+      }
+
+      if (validHexId(text)) {
+        return "ambiguous";
+      }
+
+      if (/\b[a-f0-9]{64}\b/i.test(text)) {
+        return /\/profile\//i.test(text)
+          ? "profile"
+          : "post";
+      }
+
+      if (/(?:note|event|nevent)[/:]/i.test(text)) {
+        return "post";
+      }
+
+      return "unknown";
     }
 
     function openTopology() {
@@ -3098,10 +3361,73 @@
       });
 
       return {
+        profileOnly: false,
         eventId,
         rootEvent,
         accounts: [...accountMap.values()],
         interactions: classified,
+        relays
+      };
+    }
+
+    async function analyzeProfile(input) {
+      const pubkey = extractProfilePubkey(input);
+      const relays = getEnabledRelays();
+
+      topologyMessage.textContent =
+        `Looking up profile metadata across ${relays.length} relay${relays.length === 1 ? "" : "s"}…`;
+
+      const profileEvents = await relayRequestAcrossRelays([
+        {
+          kinds: [0],
+          authors: [pubkey],
+          limit: 20
+        }
+      ], 18000);
+
+      const latestProfile = profileEvents
+        .sort((a, b) =>
+          Number(b.created_at || 0) - Number(a.created_at || 0)
+        )[0];
+
+      topologyMessage.textContent =
+        "Loading the account's public activity…";
+
+      const activityEvents = await relayRequestAcrossRelays([
+        {
+          authors: [pubkey],
+          limit: 500
+        }
+      ], 22000);
+
+      const profile = parseProfile(
+        latestProfile || { pubkey }
+      );
+
+      const activities = activityEvents
+        .filter(event => event.kind !== 0)
+        .map(event => ({
+          type: "unknown",
+          label: `Kind ${event.kind}`,
+          color: TOPOLOGY_COLORS.unknown,
+          eventId: event.id,
+          createdAt: event.created_at,
+          content: event.content || "",
+          event
+        }));
+
+      return {
+        profileOnly: true,
+        eventId: "",
+        rootEvent: null,
+        accounts: [{
+          pubkey,
+          profile,
+          isRoot: false,
+          activities,
+          eventCount: activities.length
+        }],
+        interactions: [],
         relays
       };
     }
@@ -3118,6 +3444,11 @@
 
     function renderTopology(data) {
       topologyData = data;
+
+      if (data.profileOnly) {
+        renderProfileOnly(data);
+        return;
+      }
 
       const activityCounts = {};
 
@@ -3209,11 +3540,6 @@
       const edgeGroup = svg.querySelector(".topology-edges");
       const nodeGroup = svg.querySelector(".topology-nodes");
 
-      const rootPosition = {
-        x: centerX,
-        y: centerY
-      };
-
       const peoplePositions = people.map((account, index) => ({
         account,
         ...ringPosition(
@@ -3225,10 +3551,9 @@
         )
       }));
 
-      const positions = new Map([
-        [root.pubkey, rootPosition],
-        ...peoplePositions.map(item => [item.account.pubkey, item])
-      ]);
+      const positions = new Map(
+        peoplePositions.map(item => [item.account.pubkey, item])
+      );
 
       data.interactions.forEach(({ event, interaction }) => {
         const target = positions.get(event.pubkey);
@@ -3395,6 +3720,126 @@
       }
     }
 
+    function renderProfileOnly(data) {
+      const account = data.accounts[0];
+
+      topologyStats.innerHTML = `
+        <div class="stat">
+          <strong>1</strong>
+          <span>Account</span>
+        </div>
+
+        <div class="stat">
+          <strong>${account.eventCount}</strong>
+          <span>Public events</span>
+        </div>
+
+        <div class="stat">
+          <strong>${data.relays.length}</strong>
+          <span>Relays queried</span>
+        </div>
+      `;
+
+      topologyLegend.innerHTML = `
+        <span class="legend-item">
+          <span
+            class="legend-dot"
+            style="color:${TOPOLOGY_COLORS.unknown};background:${TOPOLOGY_COLORS.unknown}">
+          </span>
+          Profile lookup mode
+        </span>
+      `;
+
+      const width = Math.max(topologyGraph.clientWidth, 620);
+      const height = Math.max(topologyGraph.clientHeight, 520);
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const avatar = profilePicture(account.profile, account.pubkey);
+
+      topologyGraph.innerHTML = `
+        <svg
+          class="topology-svg"
+          viewBox="0 0 ${width} ${height}"
+          role="img"
+          aria-label="Nostr profile lookup">
+
+          <defs>
+            <filter id="topologyGlow" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="3" result="blur"></feGaussianBlur>
+              <feMerge>
+                <feMergeNode in="blur"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+              </feMerge>
+            </filter>
+
+            <clipPath id="profile-only-avatar">
+              <circle cx="${centerX}" cy="${centerY}" r="58"></circle>
+            </clipPath>
+          </defs>
+
+          <circle
+            cx="${centerX}"
+            cy="${centerY}"
+            r="150"
+            fill="none"
+            stroke="${TOPOLOGY_COLORS.quote}"
+            stroke-dasharray="7 8"
+            opacity=".55"
+            filter="url(#topologyGlow)">
+          </circle>
+
+          <circle
+            cx="${centerX}"
+            cy="${centerY}"
+            r="105"
+            fill="none"
+            stroke="${TOPOLOGY_COLORS.reaction}"
+            stroke-dasharray="2 10"
+            opacity=".55">
+          </circle>
+
+          <image
+            href="${escapeHtml(avatar)}"
+            x="${centerX - 58}"
+            y="${centerY - 58}"
+            width="116"
+            height="116"
+            preserveAspectRatio="xMidYMid slice"
+            clip-path="url(#profile-only-avatar)">
+          </image>
+
+          <circle
+            cx="${centerX}"
+            cy="${centerY}"
+            r="75"
+            fill="none"
+            stroke="${TOPOLOGY_COLORS.quote}"
+            stroke-width="2"
+            filter="url(#topologyGlow)">
+          </circle>
+
+          <text
+            class="node-name"
+            x="${centerX}"
+            y="${centerY + 105}">
+            ${escapeHtml(
+              (account.profile.display_name || shortKey(account.pubkey))
+                .slice(0, 30)
+            )}
+          </text>
+
+          <text
+            class="node-activity"
+            x="${centerX}"
+            y="${centerY + 121}">
+            PROFILE LOOKUP
+          </text>
+        </svg>
+      `;
+
+      showTopologyAccount(account.pubkey);
+    }
+
     function showTopologyAccount(pubkey) {
       const account = topologyData?.accounts.find(
         item => item.pubkey === pubkey
@@ -3437,7 +3882,7 @@
           ` : ""}
 
           <div>
-            <div class="sheet-label">ACTIVITY</div>
+            <div class="sheet-label">PUBLIC ACTIVITY</div>
 
             <div class="activity-list">
               ${account.isRoot
@@ -3447,19 +3892,27 @@
                     <span class="activity-date">root</span>
                   </div>
                 `
-                : account.activities.map(activity => `
-                  <div class="activity-item">
-                    <span
-                      class="activity-kind"
-                      style="color:${activity.color}">
-                      ${escapeHtml(activity.label)}
-                    </span>
+                : account.activities.length
+                  ? account.activities.map(activity => `
+                    <div class="activity-item">
+                      <span
+                        class="activity-kind"
+                        style="color:${activity.color}">
+                        ${escapeHtml(activity.label)}
+                      </span>
 
-                    <span class="activity-date">
-                      ${formatDate(activity.createdAt)}
-                    </span>
-                  </div>
-                `).join("")}
+                      <span class="activity-date">
+                        ${formatDate(activity.createdAt)}
+                      </span>
+                    </div>
+                  `).join("")
+                  : `
+                    <div class="activity-item">
+                      <span class="activity-kind">
+                        No public activity found
+                      </span>
+                    </div>
+                  `}
             </div>
           </div>
 
@@ -3501,19 +3954,38 @@
         const input = topologyInput.value.trim();
 
         if (!input) {
-          throw new Error("Paste a BCH Nostr post link or event ID.");
+          throw new Error(
+            "Paste a post link, event ID, profile link, npub, nprofile, or public key."
+          );
         }
 
-        const data = await buildTopology(input);
+        const inputType = extractAnalysisType(input);
+        let data;
+
+        if (inputType === "profile") {
+          data = await analyzeProfile(input);
+        } else if (inputType === "post") {
+          data = await buildTopology(input);
+        } else if (inputType === "ambiguous") {
+          data = await buildTopology(input);
+        } else {
+          try {
+            data = await buildTopology(input);
+          } catch {
+            data = await analyzeProfile(input);
+          }
+        }
+
         renderTopology(data);
 
         topologyMessage.style.color = "var(--green)";
-        topologyMessage.textContent =
-          `Topology loaded from ${data.relays.length} configured relay${data.relays.length === 1 ? "" : "s"}.`;
+        topologyMessage.textContent = data.profileOnly
+          ? `Profile loaded from ${data.relays.length} configured relay${data.relays.length === 1 ? "" : "s"}.`
+          : `Topology loaded from ${data.relays.length} configured relay${data.relays.length === 1 ? "" : "s"}.`;
       } catch (error) {
         topologyMessage.style.color = "var(--danger)";
         topologyMessage.textContent =
-          error.message || "Unable to analyze this post.";
+          error.message || "Unable to analyze this input.";
       }
     }
 
@@ -3608,34 +4080,39 @@
     document.querySelector("[data-close-topology]")
       .addEventListener("click", closeTopology);
 
-    [detailOverlay, inspectorOverlay, linkOverlay, settingsOverlay, topologyOverlay]
-      .forEach(overlay => {
-        overlay.addEventListener("click", event => {
-          if (event.target !== overlay) {
-            return;
-          }
+    [
+      detailOverlay,
+      inspectorOverlay,
+      linkOverlay,
+      settingsOverlay,
+      topologyOverlay
+    ].forEach(overlay => {
+      overlay.addEventListener("click", event => {
+        if (event.target !== overlay) {
+          return;
+        }
 
-          if (overlay === detailOverlay) {
-            closeDetail();
-          }
+        if (overlay === detailOverlay) {
+          closeDetail();
+        }
 
-          if (overlay === inspectorOverlay) {
-            closeInspector();
-          }
+        if (overlay === inspectorOverlay) {
+          closeInspector();
+        }
 
-          if (overlay === linkOverlay) {
-            closeLinkExtractor();
-          }
+        if (overlay === linkOverlay) {
+          closeLinkExtractor();
+        }
 
-          if (overlay === settingsOverlay) {
-            closeSettings();
-          }
+        if (overlay === settingsOverlay) {
+          closeSettings();
+        }
 
-          if (overlay === topologyOverlay) {
-            closeTopology();
-          }
-        });
+        if (overlay === topologyOverlay) {
+          closeTopology();
+        }
       });
+    });
 
     search.addEventListener("input", () => {
       renderUniverse(search.value);
